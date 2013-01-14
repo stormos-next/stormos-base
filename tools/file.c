@@ -29,9 +29,9 @@
 #include "config.h"
 
 /*
- * Look inside syscall.c for this
+ * Look inside redirect.c for this
  */
-extern char *__get_redirect(const char *);
+extern char *get_redirect(const char *);
 
 static int block_file(const char *path)
 {
@@ -82,7 +82,7 @@ int creat(const char *path, mode_t mode)
 		fd = _open("/dev/null", O_WRONLY);
 	}
 	else
-		fd = _creat(__get_redirect(path), mode);
+		fd = _creat(get_redirect(path), mode);
 
 	return fd; 
 }
@@ -114,7 +114,7 @@ int creat64(const char *path, mode_t mode)
 		fd = _open64("/dev/null", O_WRONLY);
 	}
 	else
-		fd = _creat64(__get_redirect(path), mode);
+		fd = _creat64(get_redirect(path), mode);
 
 	return fd;
 }
@@ -151,11 +151,11 @@ int open(const char *path, int flag, ...)
 			mode = va_arg(args, mode_t);
 			va_end(args);
 
-			fd = _open(__get_redirect(path), flag, mode);
+			fd = _open(get_redirect(path), flag, mode);
 		}
 	}
 	else
-		fd = _open(__get_redirect(path), flag);
+		fd = _open(get_redirect(path), flag);
 
 	return fd;
 }
@@ -192,11 +192,11 @@ int open64(const char *path, int flag, ...)
 			mode = va_arg(args, mode_t);
 			va_end(args);
 
-			fd = _open64(__get_redirect(path), flag, mode);
+			fd = _open64(get_redirect(path), flag, mode);
 		}
 	}
 	else
-		fd = _open64(__get_redirect(path), flag);
+		fd = _open64(get_redirect(path), flag);
 
 	return fd;
 }
@@ -219,7 +219,7 @@ FILE *fopen(const char *path, const char *mode)
 	if (mode[0] == 'w' && block_file(path))
 		fp = _fopen("/dev/null", mode);
 	else
-		fp = _fopen(__get_redirect(path), mode);
+		fp = _fopen(get_redirect(path), mode);
 
 	return fp;
 }
@@ -242,7 +242,7 @@ FILE *fopen64(const char *path, const char *mode)
 	if (mode[0] == 'w' && block_file(path))
 		fp = _fopen64("/dev/null", mode);
 	else
-		fp = _fopen64(__get_redirect(path), mode);
+		fp = _fopen64(get_redirect(path), mode);
 
 	return fp;
 }

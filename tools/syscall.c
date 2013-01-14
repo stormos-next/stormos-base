@@ -29,90 +29,15 @@
 
 #include "config.h"
 
-#define LIBTOOL_DIR_PATH	"/usr/share/libtool"
-#define LIBTOOL_DIR_LEN		18
-#define ACLOCAL_DIR_PATH	"/usr/share/aclocal"
-#define ACLOCAL_DIR_LEN		18
-#define AUTOCONF_DIR_PATH	"/usr/share/autoconf"
-#define AUTOCONF_DIR_LEN	19
-#define AUTOMAKE_DIR_PATH	"/usr/share/automake"
-#define AUTOMAKE_DIR_LEN	19
-
-#define LIBTOOL_BIN_PATH        "/usr/bin/libtool"
-#define LIBTOOL_BIN_LEN         16
-#define AUTOM4TE_BIN_PATH       "/usr/bin/autom4te"
-#define AUTOM4TE_BIN_LEN        17
-#define ACLOCAL_BIN_PATH        "/usr/bin/aclocal"
-#define ACLOCAL_BIN_LEN         16
-#define AUTOCONF_BIN_PATH       "/usr/bin/autoconf"
-#define AUTOCONF_BIN_LEN        17
-#define AUTOMAKE_BIN_PATH       "/usr/bin/automake"
-#define AUTOMAKE_BIN_LEN        17
-#define AUTORECONF_BIN_PATH	"/usr/bin/autoreconf"
-#define AUTORECONF_BIN_LEN	19	
-
 /*
  * Look in string.c for this
  */
 extern char *strreplace(const char*, const char*, const char*);
 
 /*
- * FIXME: This will leak memory
+ * Look in redirect.c for this
  */
-char *__get_redirect(const char *old_path)
-{
-	char *new_path;
-
-	/*
-	 * FIXME: Where the eff is this coming from?
-	 */
-	if (strncmp(old_path, AUTOCONF_DIR_PATH "/m4/", AUTOCONF_DIR_LEN + 4) == 0)
-		asprintf(&new_path, PROTO_DIR_PATH ACLOCAL_DIR_PATH "%s", old_path + AUTOCONF_DIR_LEN + 3);	
-
-	/*
-	 * Redirect libtool and fiends directories to proto dir
-	 */	
-	else if (strncmp(old_path, LIBTOOL_DIR_PATH, LIBTOOL_DIR_LEN) == 0 ||
-	    strncmp(old_path, ACLOCAL_DIR_PATH, ACLOCAL_DIR_LEN) == 0 ||
-	    strncmp(old_path, AUTOCONF_DIR_PATH, AUTOCONF_DIR_LEN) == 0 ||
-	    strncmp(old_path, AUTOMAKE_DIR_PATH, AUTOMAKE_DIR_LEN) == 0)
-		asprintf(&new_path, PROTO_DIR_PATH "%s", old_path);
-
-	/* 
-	 * Redirect libtool and fiends executables to proto dir
-	 */
-        else if (strncmp(old_path, LIBTOOL_BIN_PATH, LIBTOOL_BIN_LEN) == 0 ||
-            strncmp(old_path, LIBTOOL_BIN_PATH + 9, LIBTOOL_BIN_LEN - 9) == 0)
-                new_path = strdup(PROTO_DIR_PATH LIBTOOL_BIN_PATH);
-        else if (strncmp(old_path, AUTOM4TE_BIN_PATH, AUTOM4TE_BIN_LEN) == 0 ||
-            strncmp(old_path, AUTOM4TE_BIN_PATH + 9, AUTOM4TE_BIN_LEN - 9) == 0)
-                new_path = strdup(PROTO_DIR_PATH AUTOM4TE_BIN_PATH);
-        else if (strncmp(old_path, ACLOCAL_BIN_PATH, ACLOCAL_BIN_LEN) == 0 ||
-            strncmp(old_path, ACLOCAL_BIN_PATH + 9, ACLOCAL_BIN_LEN - 9) == 0)
-                new_path = strdup(PROTO_DIR_PATH ACLOCAL_BIN_PATH);
-        else if (strncmp(old_path, AUTOCONF_BIN_PATH, AUTOCONF_BIN_LEN) == 0 ||
-            strncmp(old_path, AUTOCONF_BIN_PATH + 9, AUTOCONF_BIN_LEN - 9) == 0)
-                new_path = strdup(PROTO_DIR_PATH AUTOCONF_BIN_PATH);
-        else if (strncmp(old_path, AUTOMAKE_BIN_PATH, AUTOMAKE_BIN_LEN) == 0 ||
-            strncmp(old_path, AUTOMAKE_BIN_PATH + 9, AUTOMAKE_BIN_LEN - 9) == 0)
-                new_path = strdup(PROTO_DIR_PATH AUTOMAKE_BIN_PATH);
-	else if (strncmp(old_path, AUTORECONF_BIN_PATH, AUTORECONF_BIN_LEN) == 0 ||
-	    strncmp(old_path, AUTORECONF_BIN_PATH + 9, AUTORECONF_BIN_LEN - 9) == 0)
-		new_path = strdup(PROTO_DIR_PATH AUTORECONF_BIN_PATH);
-
-	/*
-	 * No redirect
-	 */
-	else
-		new_path = strdup(old_path);
-
-#ifdef DEBUG_REDIRECT
-	if (strcmp(old_path, new_path) != 0)
-		fprintf(stderr, "Redirecting \"%s\" => \"%s\"\n", old_path, new_path);
-#endif
-
-	return new_path;
-}
+extern char *get_redirect(const char *);
 
 int execve(const char *old_path, const char **old_argv, const char **envp)
 {
@@ -129,7 +54,7 @@ int execve(const char *old_path, const char **old_argv, const char **envp)
 	/*
 	 * Redirect some exec paths to proto dir
 	 */
-	new_path = __get_redirect(old_path);
+	new_path = get_redirect(old_path);
 
 	/*
 	 * Redirect any matching paths passed in argv 
@@ -146,10 +71,11 @@ int execve(const char *old_path, const char **old_argv, const char **envp)
 		/*
 		 * FIXME: This is a hack for GNU M4
 		 */
+#define AUTOCONF_DIR_PATH	"/usr/share/autoconf"
 		if (strstr(old_argv[i], "=" AUTOCONF_DIR_PATH) != NULL)
 			new_argv[i] = strreplace("=" AUTOCONF_DIR_PATH, "=" PROTO_DIR_PATH AUTOCONF_DIR_PATH, old_argv[i]);
 		else
-			new_argv[i] = __get_redirect(old_argv[i]);
+			new_argv[i] = get_redirect(old_argv[i]);
 	new_argv[i] = NULL;
 
 #ifdef DEBUG_EXECVE
@@ -184,7 +110,7 @@ int stat(const char *path, struct stat *statptr)
 	/*
 	 * Redirect some stat requests to the proto directory
 	 */
-	return _stat(__get_redirect(path), statptr);
+	return _stat(get_redirect(path), statptr);
 }
 
 #ifndef _LP64
@@ -201,7 +127,7 @@ int stat64(const char *path, struct stat64 *statptr)
 	/*
 	 * Redirect some stat64 requests to the proto directory
 	 */
-	return _stat64(__get_redirect(path), statptr);
+	return _stat64(get_redirect(path), statptr);
 }
 #endif
 
@@ -218,7 +144,7 @@ int lstat(const char *path, struct stat *statptr)
 	/*
 	 * Redirect some lstat requests to the proto directory
 	 */
-	return _lstat(__get_redirect(path), statptr);
+	return _lstat(get_redirect(path), statptr);
 }
 
 #ifndef _LP64
@@ -235,7 +161,7 @@ int lstat64(const char *path, struct stat64 *statptr)
 	/*
 	 * Redirect some lstat64 requests to the proto directory
 	 */
-	return _lstat64(__get_redirect(path), statptr);
+	return _lstat64(get_redirect(path), statptr);
 }
 #endif
 
@@ -252,7 +178,7 @@ int symlink(const char *target, const char *path)
 	/*
 	 * Redirect some link targets to protodir
 	 */
-	return _symlink(__get_redirect(target), path);
+	return _symlink(get_redirect(target), path);
 }
 
 char *getenv(const char *name)
@@ -275,7 +201,7 @@ char *getenv(const char *name)
 	/*
 	 * Redirect some getenv results to the protodir
 	 */
-	return __get_redirect(value);
+	return get_redirect(value);
 }
 
 int clearenv(void)
@@ -317,7 +243,7 @@ DIR *opendir(const char *path)
 	/*
 	 * Redirect some requests to the proto dir
 	 */
-	return _opendir(__get_redirect(path));	
+	return _opendir(get_redirect(path));	
 }
 
 int chdir(const char *path)
@@ -333,7 +259,7 @@ int chdir(const char *path)
 	/*
 	 * Redirect some chdir requests to the proto directory
 	 */
-	return _chdir(__get_redirect(path));
+	return _chdir(get_redirect(path));
 }
 
 int main(int argc, const char argv)

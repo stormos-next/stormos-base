@@ -24,7 +24,7 @@
 CFLAGS = -G -shared -fPIC
 LDFLAGS = -Mmapfile -ztext -zdefs -zinterpose
 LIBS = -ldl -lc
-SRC = syscall.c file.c string.c
+SRC = syscall.c file.c string.c redirect.c
 
 all: buildenv 
 
@@ -37,6 +37,9 @@ libbuildenv-64.so: $(SRC) mapfile
 buildenv: buildenv.sh libbuildenv-32.so libbuildenv-64.so
 	cp $< $@ && chmod +x $@
 
+redirect.c: redirect.lst genredirect.py
+	python genredirect.py $< $@
+
 clean:
-	rm -f buildenv libbuildenv-32.so libbuildenv-64.so
+	rm -f buildenv redirect.c libbuildenv-32.so libbuildenv-64.so
 # DO NOT DELETE

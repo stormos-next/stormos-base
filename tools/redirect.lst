@@ -1,0 +1,13 @@
+# directories to redirect
+/usr/share/libtool
+/usr/share/aclocal
+/usr/share/autoconf
+/usr/share/automake
+
+# executables to redirect
+/usr/bin/libtool$
+/usr/bin/autom4te$
+/usr/bin/aclocal$
+/usr/bin/autoconf$
+/usr/bin/automake$
+/usr/bin/autoreconf$
