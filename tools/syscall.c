@@ -22,20 +22,12 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
 #include <errno.h>
 #include <dlfcn.h>
-#include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
-#include <sys/fcntl.h>
 
-/*
- * We hardcode the proto dir for now.  Yes I know, it's horrible.
- */
-#define PROTO_DIR_PATH		"/root/stormos-base/proto"
-#define PROTO_DIR_LEN		24
+#include "config.h"
 
 #define LIBTOOL_DIR_PATH	"/usr/share/libtool"
 #define LIBTOOL_DIR_LEN		18
@@ -67,7 +59,7 @@ extern char *strreplace(const char*, const char*, const char*);
 /*
  * FIXME: This will leak memory
  */
-static char *__get_redirect(const char *old_path)
+char *__get_redirect(const char *old_path)
 {
 	char *new_path;
 
@@ -120,238 +112,6 @@ static char *__get_redirect(const char *old_path)
 #endif
 
 	return new_path;
-}
-
-static int __is_crap_file(const char *path)
-{
-	int len = strlen(path);
-
-	/*
-	 * It's a fucking libtool archive.  Seriously guys.
-	 */
-	if (len > 2 && path[len-3] == '.' && path[len-2] == 'l' && path[len-1] == 'a')
-		return 1;
-
-	/*
-	 * No idea what the file is.  Assumes all's good.
-	 */
-	return 0;
-}
-
-static int __inside_protodir(const char *path)
-{
-	/*
-	 * Check if given path resides in proto dir
-	 */
-	return (strncmp(path, PROTO_DIR_PATH, PROTO_DIR_LEN) == 0);
-}
-
-int creat(const char *path, mode_t mode)
-{
-	static int (*_creat)(const char *, mode_t) = NULL;
-	static int (*_open)(const char *, int) = NULL;
-	int fd;
-
-	/*
-	 * Load the next symbol which is hopefully in libc.
-	 */
-	if (_creat == NULL)
-		_creat = (int (*)(const char *, mode_t))dlsym(RTLD_NEXT, "creat");
-
-	/*
-	 * If asked to create a crap file, return handle to /dev/null
-	 */
-	if (__is_crap_file(path) && __inside_protodir(path))
-	{
-		/*
-		 * Prefer to keep our own handle to the real open function
-		 */
-		if (_open == NULL)
-			_open = (int (*)(const char *, int))dlsym(RTLD_NEXT, "open");
-
-		fd = _open("/dev/null", O_WRONLY);
-	}
-	else
-		fd = _creat(__get_redirect(path), mode);
-
-	return fd; 
-}
-
-#ifndef _LP64
-int creat64(const char *path, mode_t mode)
-{
-	static int (*_creat64)(const char *, mode_t) = NULL;
-	static int (*_open64)(const char *, int) = NULL;
-	int fd;
-
-	/*
-	 * Load the next symbol which is hopefully in libc.
-	 */
-	if (_creat64 == NULL)
-		_creat64 = (int (*)(const char *, mode_t))dlsym(RTLD_NEXT, "creat64");
-
-	/*
-	 * If asked to creat a crap file, return handle to /dev/null
-	 */
-	if (__is_crap_file(path) && __inside_protodir(path))
-	{
-		/*
-		 * Prefer to keep our own handle to the real open64 function
-		 */
-		if (_open64 == NULL)
-			_open64 = (int (*)(const char *, int))dlsym(RTLD_NEXT, "open64");
-
-		fd = _open64("/dev/null", O_WRONLY);
-	}
-	else
-		fd = _creat64(__get_redirect(path), mode);
-
-	return fd;
-}
-#endif
-
-int open(const char *path, int flag, ...)
-{
-	static int (*_open)(const char *, int, ...) = NULL;
-	int fd;
-
-	/*
-	 * Load the next symbol which is hopefully in libc.
-	 */
-	if (_open == NULL)
-		_open = (int (*)(const char *, int, ...))dlsym(RTLD_NEXT, "open");
-
-	/*
-	 * If asked to create a crap file, return handle to /dev/null
-	 */
-	if (flag & O_CREAT)
-	{
-		if (__is_crap_file(path) && __inside_protodir(path))
-			fd = _open("/dev/null", flag ^ O_CREAT);
-		else
-		{
-			mode_t mode;
-			va_list args;
-
-			/*
-			 * The posix specification says that the mode
-			 * argument _must_ be given with O_CREAT
-			 */
-			va_start(args, flag);
-			mode = va_arg(args, mode_t);
-			va_end(args);
-
-			fd = _open(__get_redirect(path), flag, mode);
-		}
-	}
-	else
-		fd = _open(__get_redirect(path), flag);
-
-	return fd;
-}
-
-#ifndef _LP64
-int open64(const char *path, int flag, ...)
-{
-	static int (*_open64)(const char *, int, ...) = NULL;
-	int fd;
-
-	/*
-	 * Load the next symbol which is hopefully in libc.
-	 */
-	if (_open64 == NULL)
-		_open64 = (int (*)(const char *, int, ...))dlsym(RTLD_NEXT, "open64");
-
-	/*
-	 * If asked to create a crap file, return handle to /dev/null
-	 */
-	if (flag & O_CREAT)
-	{
-		if (__is_crap_file(path) && __inside_protodir(path))
-			fd = _open64("/dev/null", flag ^ O_CREAT);
-		else
-		{
-			mode_t mode;	
-			va_list args;
-
-			/*
-			 * The posix specification says that the mode
-			 * argument _must_ be given with O_CREAT
-			 */
-			va_start(args, flag);
-			mode = va_arg(args, mode_t);
-			va_end(args);
-
-			fd = _open64(__get_redirect(path), flag, mode);
-		}
-	}
-	else
-		fd = _open64(__get_redirect(path), flag);
-
-	return fd;
-}
-#endif
-
-FILE *fopen(const char *path, const char *mode)
-{
-	static FILE *(*_fopen)(const char *, const char *) = NULL;
-	FILE *fp;
-
-	/*
-	 * Load the next symbol which is hopefully in libc.
-	 */
-	if (_fopen == NULL)
-		_fopen = (FILE *(*)(const char *, const char *))dlsym(RTLD_NEXT, "fopen");
-
-	/*
-	 * If asked to create a crap file, return handle to /dev/null
-	 */
-	if (mode[0] == 'w' && __is_crap_file(path) && __inside_protodir(path))
-		fp = _fopen("/dev/null", mode);
-	else
-		fp = _fopen(__get_redirect(path), mode);
-
-	return fp;
-}
-
-#ifndef _LP64
-FILE *fopen64(const char *path, const char *mode)
-{
-        static FILE *(*_fopen64)(const char *, const char *) = NULL;
-	FILE *fp;
-
-	/*
-	 * Load the next symbol which is hopefully in libc.
-	 */
-        if (_fopen64 == NULL)
-                _fopen64 = (FILE *(*)(const char *, const char *))dlsym(RTLD_NEXT, "fopen64");
-
-	/*
-	 * If asked to create a crap file, return handle to /dev/null
-	 */
-	if (mode[0] == 'w' && __is_crap_file(path) && __inside_protodir(path))
-		fp = _fopen64("/dev/null", mode);
-	else
-		fp = _fopen64(__get_redirect(path), mode);
-
-	return fp;
-}
-#endif
-
-DIR *opendir(const char *path)
-{
-	static DIR *(*_opendir)(const char *) = NULL;
-
-	/*
-	 * Load the next symbol which is hopefully in libc.
-	 */
-	if (_opendir == NULL)
-		_opendir = (DIR *(*)(const char *))dlsym(RTLD_NEXT, "opendir");
-
-	/*
-	 * Redirect some requests to the proto dir
-	 */
-	return _opendir(__get_redirect(path));	
 }
 
 int execve(const char *old_path, const char **old_argv, const char **envp)
@@ -409,27 +169,6 @@ int execve(const char *old_path, const char **old_argv, const char **envp)
 #endif
 
 	return _execve(new_path, (const char **)new_argv, envp);
-}
-
-int rename(const char *oldpath, const char *newpath)
-{
-	static int (*_rename)(const char *, const char *) = NULL;
-
-	/*
-	 * Load the next symbol which is hopefully in libc.
-	 */
-	if (_rename == NULL)
-		_rename = (int (*)(const char *, const char *))dlsym(RTLD_NEXT, "rename");
-
-	/*
-	 * If asked to rename a file to a crapfile, unlink the original file instead
-	 */
-	if (__is_crap_file(newpath) && __inside_protodir(newpath))
-		(void)unlink(oldpath);
-	else
-		return _rename(oldpath, newpath);
-
-	return 0;
 }
 
 int stat(const char *path, struct stat *statptr)
@@ -563,6 +302,22 @@ int clearenv(void)
 	environ = new_environ;
 
 	return 0;
+}
+
+DIR *opendir(const char *path)
+{
+	static DIR *(*_opendir)(const char *) = NULL;
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_opendir == NULL)
+		_opendir = (DIR *(*)(const char *))dlsym(RTLD_NEXT, "opendir");
+
+	/*
+	 * Redirect some requests to the proto dir
+	 */
+	return _opendir(__get_redirect(path));	
 }
 
 int chdir(const char *path)

@@ -24,7 +24,7 @@
 CFLAGS = -G -shared -fPIC
 LDFLAGS = -Mmapfile -ztext -zdefs -zinterpose
 LIBS = -ldl -lc
-SRC = syscall.c string.c
+SRC = syscall.c file.c string.c
 
 all: buildenv 
 
