@@ -21,6 +21,7 @@
 # Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 # Copyright (c) 2013, Joyent, Inc.  All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 VER =	libxml2-2.7.6
@@ -51,6 +52,14 @@ AUTOCONF_OPTS += \
 	--enable-symbol-versioning=$(BASE)/mapfile
 
 PATCHES =	Patches/*
+
+# Regen makefiles after patching
+FROB_SENTINEL.32 = \
+	(mkdir -p $(DESTDIR)/usr/share/aclocal ; cd $(VER.32) ; \
+	ACLOCAL='aclocal -I$(DESTDIR)/usr/share/aclocal' autoreconf -ivf)
+FROB_SENTINEL.64 = \
+	(mkdir -p $(DESTDIR)/usr/share/aclocal ; cd $(VER.64) ; \
+	ACLOCAL='aclocal -I$(DESTDIR)/usr/share/aclocal' autoreconf -ivf)
 
 include ../Makefile.targ
 

@@ -18,27 +18,15 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2012, Joyent, Inc.  All rights reserved.
-# Copyright (c) 2012 Andrew Stormont.  All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
-VER =	binutils-2.22
+VER =	make-3.82
 
 include ../Makefile.defs
 
-TARBALL =		$(VER).tar.bz2
-TARBALL_COMPRESS =	-j
-AUTOCONF_OPTS = \
-	--prefix=/usr/gnu \
-	--enable-64-bit-bfd \
+AUTOCONF_OPTS += \
 	--program-prefix=g
-
-AUTOCONF_ENV += \
-	CC=/opt/gcc-3.4.3/bin/gcc \
-	CXX=/opt/gcc-3.4.3/bin/g++ \
-	DESTDIR=$(DESTDIR) \
-	MAKE=gmake \
-	CONFIG_SHELL=/bin/bash
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

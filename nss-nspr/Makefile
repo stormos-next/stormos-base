@@ -19,6 +19,7 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012, Joyent, Inc.  All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 VER =	nss-3.12.8
@@ -37,17 +38,22 @@ include ../Makefile.targ
 
 all: all_32 all_64
 
+#
+# We need to set LD_LIBRARY_PATH because the build wants libgcc_s.so.1
+# which might not be instsalled on the host
+#
 all_32: $(VER.32)/$(UNPACK_SENTINEL)
 	@ (cd $(VER.32)/mozilla/security/nss; \
 	    PATH=$(PATH) \
 	    gmake BUILD_OPT=1 BUILD_SUN_PKG=1 NS_USE_GCC=1 NO_MDUPDATE=1 \
-	    CC="$(GCC)" CXX="$(GXX)" CPPFLAGS="$(CPPFLAGS)" \
-	    LDFLAGS="$(LDFLAGS)" nss_build_all )
+	    LD_LIBRARY_PATH="$(DESTDIR)/usr/lib" CC="$(GCC)" CXX="$(GXX)" \
+	    CPPFLAGS="$(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" nss_build_all )
 
 all_64: $(VER.64)/$(UNPACK_SENTINEL)
 	@ (cd $(VER.64)/mozilla/security/nss; \
 	    PATH=$(PATH) \
 	    gmake USE_64=1 BUILD_OPT=1 BUILD_SUN_PKG=1 NS_USE_GCC=1 \
+	    LD_LIBRARY_PATH_64="$(DESTDIR)/usr/lib/amd64" \
 	    CC="$(GCC.64)" CXX="$(GXX.64)" CPPFLAGS="$(CPPFLAGS)" \
 	    LDFLAGS="$(LDFLAGS.64)" NO_MDUPDATE=1 nss_build_all )
 

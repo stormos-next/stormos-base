@@ -19,13 +19,14 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012, Joyent, Inc.
+# Copyright (c) 2013 Andrew Stormont.
 #
 # To build everything just run 'gmake' in this directory.
 #
 
 BASE =		$(PWD)
 DESTDIR =	$(BASE)/proto
-PATH =		$(DESTDIR)/usr/bin:/usr/bin:/usr/sbin:/sbin:/opt/local/bin
+PATH =		$(DESTDIR)/usr/bin:/usr/bin:/usr/sbin:/sbin:/opt/csw/bin
 SUBDIRS = \
 	bash \
 	bind \
@@ -74,6 +75,13 @@ STRAP_SUBDIRS = \
 	nss-nspr \
 	openssl1x
 
+BUILD_SUBDIRS = \
+	binutils \
+	gcc4 \
+	libgmp \
+	libmpfr \
+	make
+
 NAME =	illumos-extra
 
 AWK =		$(shell (which gawk 2>/dev/null | grep -v "^no ") || which awk)
@@ -88,12 +96,15 @@ GITDESCRIBE = \
 
 TARBALL =	$(NAME)-$(BRANCH)-$(TIMESTAMP)-$(GITDESCRIBE).tgz
 
-all: $(SUBDIRS)
+all: $(BUILD_SUBDIRS) $(SUBDIRS)
 
 strap: $(STRAP_SUBDIRS)
 
 curl: libz openssl1x libidn
+gcc4: libgmp libmpfr binutils
 gzip: libz
+libmpfr: libgmp
+make: gcc4
 node.js: openssl1x libm
 ncurses: libm
 dialog: ncurses
@@ -103,38 +114,31 @@ openldap: openssl1x
 
 #
 # pkg-config may be installed. This will actually only hurt us rather than help
-# us. pkg-config is based as a part of the pkgsrc packages and will pull in
-# versions of libraries that we have in /opt/local rather than using the ones in
+# us. pkg-config is based as a part of the blastwave packages and will pull in
+# versions of libraries that we have in /opt/csw rather than using the ones in
 # /usr that we want. PKG_CONFIG_LIBDIR controls the actual path. This
 # environment variable nulls out the search path. Other vars just control what
 # gets appended.
 #
 
-$(DESTDIR)/usr/gnu/bin/gas: FRC
-	(cd binutils && \
-	    PKG_CONFIG_LIBDIR="" \
-	    STRAP=$(STRAP) \
-	    $(MAKE) DESTDIR=$(DESTDIR) install)
-
-
-$(DESTDIR)/usr/bin/gcc: $(DESTDIR)/usr/gnu/bin/gas
-	(cd gcc4 && \
-	    PKG_CONFIG_LIBDIR="" \
-	    STRAP=$(STRAP) \
-	    $(MAKE) DESTDIR=$(DESTDIR) install)
-
-$(SUBDIRS): $(DESTDIR)/usr/bin/gcc
+$(BUILD_SUBDIRS): FRC
 	(cd $@ && \
 	    PKG_CONFIG_LIBDIR="" \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
-install: $(SUBDIRS) gcc4 binutils
+$(SUBDIRS): $(BUILD_SUBDIRS)
+	(cd $@ && \
+	    PKG_CONFIG_LIBDIR="" \
+	    STRAP=$(STRAP) \
+	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
-install_strap: $(STRAP_SUBDIRS) gcc4 binutils
+install: $(SUBDIRS) $(BUILD_SUBDIRS)
+
+install_strap: $(STRAP_SUBDIRS) $(BUILD_SUBDIRS)
 
 clean: 
-	-for dir in $(SUBDIRS) gcc4 binutils; \
+	-for dir in $(SUBDIRS) $(BUILD_SUBDIRS); \
 	    do (cd $$dir; $(MAKE) DESTDIR=$(DESTDIR) clean); done
 	-rm -rf proto
 

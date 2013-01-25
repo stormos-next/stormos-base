@@ -55,10 +55,14 @@ CFLAGS +=	-O2
 #        ../libntp/libntp.a(audio.o) definition taken
 #
 # Until such a time as this is fixed, we instead ignore -zfatal-warnings and
-# just add -zassert-deflib. Unfortunately we don't have a programatic way to
-# check it currently, but this will have to do for now.
+# just add -zassert-deflib if it's supported. Unfortunately we don't have a
+# programatic way to check it currently, but this will have to do for now.
 #
-LDFLAGS = $(T32_LDFLAGS) -zassert-deflib
+ifneq ($(shell ld --help 2>&1 | grep assert-deflib),)
+	LDFLAGS = $(T32_LDFLAGS) -zassert-deflib
+else
+	LDFLAGS = $(T32_LDFLAGS)
+endif
 
 AUTOCONF_ENV += \
 	LD_OPTIONS="$(LDFLAGS)" \

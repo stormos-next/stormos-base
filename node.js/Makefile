@@ -19,6 +19,7 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012, Joyent, Inc.  All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 MAJOR_VER =	0.8
@@ -43,8 +44,11 @@ CFLAGS +=	-Wno-unknown-pragmas
 #
 LDFLAGS +=	-lumem
 
+#
+# Disable dtrace for now as it causes the build to fail on old illumos versions
+#
 AUTOCONF_OPTS += \
-	--with-dtrace \
+	--without-dtrace \
 	--openssl-use-sys \
 	--openssl-libpath=$(DESTDIR)/lib \
 	--openssl-includes=$(DESTDIR)/usr/include \
@@ -57,25 +61,12 @@ AUTOCONF_CFLAGS =	CFLAGS="$(CPPFLAGS) $(CFLAGS)"
 AUTOCONF_LIBS =
 AUTOCONF_ENV +=		CXXFLAGS="$(CPPFLAGS) $(CFLAGS)"
 
-#
-# Jump through hoops to get the locally-run build tools to build with the
-# correct compiler and without referencing anything in the proto area.
-# This is needed because the proto area may contain libraries that are not
-# present or are of different versions on the build machine itself.  A
-# patch to the python configure program is also required to make this work.
-#
-AUTOCONF_ENV +=		LDFLAGS.host="-Wl,-i"
-AUTOCONF_ENV +=		CXX.host="/opt/local/bin/g++"
-AUTOCONF_ENV +=		CC.host="/opt/local/bin/gcc"
-AUTOCONF_ENV +=		CXX_host="/opt/local/bin/g++"
-AUTOCONF_ENV +=		CC_host="/opt/local/bin/gcc"
-AUTOCONF_ENV +=		LINK.host="/opt/local/bin/g++"
+# The build process wants libssl.so.1.0.0 which may not be installed
+AUTOCONF_ENV +=		LD_LIBRARY_PATH="$(DESTDIR)/usr/lib"
 
 OVERRIDES +=	$(AUTOCONF_ENV)
 
 AUTOCONF_OUT =	build/default/config.h
-
-PATCHES =	Patches/*
 
 all: all_autoconf
 

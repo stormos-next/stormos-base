@@ -19,12 +19,16 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012, Joyent, Inc.  All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 VER =	coreutils-8.13
 
 include ../Makefile.defs
 include ../Makefile.targ
+
+# Help the build find gmp headers in proto dir
+CFLAGS += -I$(DESTDIR)/usr/include/gmp
 
 all: all_autoconf
 

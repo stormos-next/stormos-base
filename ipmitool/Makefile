@@ -19,6 +19,7 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012 Joyent Inc., All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 VER =	ipmitool-1.8.11
@@ -33,7 +34,10 @@ AUTOCONF_ENV += \
 	INSTALL="ginstall -c"
 AUTOCONF_OPTS += --enable-solaris-opt
 
+# Some old versions of illumos dont have sys/ipmi.h
+ifeq ($(shell test -f /usr/include/sys/ipmi.h && echo yes),yes)
 PATCHES +=	ipmitool-enable-openipmi.diff
+endif
 PATCHES +=	ipmitool-nosfw.diff
 
 include ../Makefile.targ

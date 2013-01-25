@@ -1,0 +1,37 @@
+--- gmp-h.in.bak	Wed Jan 23 00:10:56 2013
++++ gmp-h.in	Wed Jan 23 00:15:08 2013
+@@ -31,7 +31,11 @@
+ #if ! defined (__GMP_WITHIN_CONFIGURE)
+ #define __GMP_HAVE_HOST_CPU_FAMILY_power   @HAVE_HOST_CPU_FAMILY_power@
+ #define __GMP_HAVE_HOST_CPU_FAMILY_powerpc @HAVE_HOST_CPU_FAMILY_powerpc@
+-#define GMP_LIMB_BITS                      @GMP_LIMB_BITS@
++#if defined(__amd64) || defined(__sparcv9)
++#define GMP_LIMB_BITS 64
++#else
++#define GMP_LIMB_BITS 32
++#endif
+ #define GMP_NAIL_BITS                      @GMP_NAIL_BITS@
+ #endif
+ #define GMP_NUMB_BITS     (GMP_LIMB_BITS - GMP_NAIL_BITS)
+--- Makefile.am	Tue Dec 18 20:05:09 2012
++++ Makefile.am.bak	Tue Jan 22 21:55:20 2013
+@@ -102,18 +102,8 @@
+ endif
+ EXTRA_DIST += gmpxx.h
+ 
+-# gmp.h and mp.h are architecture dependent, mainly since they encode the
+-# limb size used in libgmp.  For that reason they belong under $exec_prefix
+-# not $prefix, strictly speaking.
+-#
+-# $exec_prefix/include is not in the default include path for gcc built to
+-# the same $prefix and $exec_prefix, which might mean gmp.h is not found,
+-# but anyone knowledgeable enough to be playing with exec_prefix will be able
+-# to address that.
+-#
+-includeexecdir = $(exec_prefix)/include
+ include_HEADERS = $(GMPXX_HEADERS_OPTION)
+-nodist_includeexec_HEADERS = gmp.h
++nodist_include_HEADERS = gmp.h
+ lib_LTLIBRARIES = libgmp.la $(GMPXX_LTLIBRARIES_OPTION)
+ 
+ BUILT_SOURCES = gmp.h

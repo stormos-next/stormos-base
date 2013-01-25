@@ -1,0 +1,25 @@
+# Set RUNPATH on cc1 and cc1plus so they don't try to use the hosts
+# libgmp and libmpfr libraries, which may or may not be installed.
+# (c) Copyright 2013 Andrew Stormont
+--- gcc/Makefile.in.bak	Fri Jan 25 10:02:04 2013
++++ gcc/Makefile.in	Fri Jan 25 10:04:15 2013
+@@ -1652,7 +1652,7 @@
+ 
+ cc1$(exeext): $(C_OBJS) cc1-checksum.o $(BACKEND) $(LIBDEPS)
+ 	$(CC) $(ALL_CFLAGS) $(LDFLAGS) -o $@ $(C_OBJS) cc1-checksum.o \
+-	  $(BACKEND) $(LIBS) $(BACKENDLIBS)
++	  $(BACKEND) $(LIBS) $(BACKENDLIBS) -R'$$ORIGIN/../../../../lib'
+ 
+ #
+ # Build libgcc.a.
+--- gcc/cp/Make-lang.in.bak	Fri Jan 25 11:36:43 2013
++++ gcc/cp/Make-lang.in	Fri Jan 25 11:37:24 2013
+@@ -101,7 +101,7 @@
+ cc1plus-checksum.o : cc1plus-checksum.c
+ 
+ cc1plus$(exeext): $(CXX_OBJS) cc1plus-checksum.o $(BACKEND) $(LIBDEPS)
+-	$(CC) $(ALL_CFLAGS) $(LDFLAGS) -o $@ \
++	$(CC) $(ALL_CFLAGS) $(LDFLAGS) -R'$$ORIGIN/../../../../lib' -o $@ \
+ 	      $(CXX_OBJS) cc1plus-checksum.o $(BACKEND) $(LIBS) $(BACKENDLIBS)
+ 
+ # Special build rules.

@@ -19,6 +19,7 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012, Joyent, Inc.  All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 VER =	ncurses-5.7
@@ -83,11 +84,18 @@ unhack-curses:
 		fi; \
 	done
 
+#
+# We need to set LD_LIBRARY_PATH because libncurses.so.5 is needed
+# by the install target, but it might not be installed on the host.
+# It also wants libgcc_s.so.1 which might not be installed either
+#
 install: all unhack-curses
 	mkdir -p $(DESTDIR)
 	(cd $(VER.64); env - PATH=$(DESTDIR)/usr/bin:/usr/bin:$(PATH) \
+	    LD_LIBRARY_PATH_64=$(PWD)/$(VER.64)/lib:$(DESTDIR)/usr/lib/amd64 \
 	    gmake DESTDIR=$(DESTDIR) install)
 	(cd $(VER.32); env - PATH=$(DESTDIR)/usr/bin:/usr/bin:$(PATH) \
+	    LD_LIBRARY_PATH=$(PWD)/$(VER.32)/lib:$(DESTDIR)/usr/lib \
 	    gmake DESTDIR=$(DESTDIR) install)
 	mv $(USRDIR)/gnu/bin/infocmp $(USRDIR)/bin/ginfocmp
 	mv $(USRDIR)/gnu/bin/tic $(USRDIR)/bin/gtic

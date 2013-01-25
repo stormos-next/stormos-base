@@ -21,70 +21,44 @@
 # Copyright 2010 Sun Microsystems, Inc.  All rights reserved.
 # Use is subject to license terms.
 # Copyright (c) 2013, Joyent, Inc.  All rights reserved.
-#
-
-#
-# This makefile has not been adapted to use the infrastructure because of
-# the need to build in a separate subdirectory from the source.  This could
-# be accommodated without excessive effort but is a highly unusual pattern.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 VER =	gcc-4.4.4
 
 include ../Makefile.defs
 
+PATCHES = Patches/*
+PATCHSTRIP = 0
+
 CLEANFILES +=	$(VER)-i386-build
 
-GCC =	/opt/local/bin/gcc
+GCC =	/opt/gcc-3.4.3/bin/gcc
 GXX =	/bin/false
 
+AUTOCONF_OPTS += \
+	--with-ld=/usr/bin/ld \
+	--without-gnu-ld \
+	--with-gnu-as \
+	--with-as=$(DESTDIR)/usr/gnu/bin/gas \
+	--enable-languages="c,c++" \
+	--enable-shared \
+	--with-gmp-include="$(DESTDIR)/usr/include/gmp" \
+	--with-mpfr-include="$(DESTDIR)/usr/include/mpfr" \
+	--disable-nls \
+	--with-included-gettext
+
+# Need to set LD_LIBRARY_PATH so our broken bootstrap compiler (gcc 3.4.3)
+# can find libgcc_s.so.1 and so the compiler built in stage2 can find the
+# new libgmp and libmpfr in the proto dir
+all: $(AUTOCONF_OUT.32)
+	(cd $(VER.32); env - PATH=$(PATH) \
+	    LD_LIBRARY_PATH=$(DESTDIR)/usr/lib:/opt/gcc-3.4.3/lib \
+	    CFLAGS="-g -O2" \
+	    STAGE1_CFLAGS="-g -O2" \
+	    CFLAGS_FOR_TARGET="-g -O2" \
+	    $(MAKE) $(PARALLEL) $(OVERRIDES) bootstrap)
+
+install: install_autoconf_32
+
 include ../Makefile.targ
-
-all: $(VER)-i386-build/config.status
-	(cd $(VER)-i386-build; env - \
-	    CC=$(GCC) \
-	    CFLAGS="-g -O2" \
-	    DESTDIR=$(DESTDIR) \
-	    PATH=$(PATH) \
-	    STAGE1_CFLAGS="-g -O2" \
-	    CFLAGS_FOR_TARGET="-g -O2" \
-	    MAKE=gmake gmake \
-		CFLAGS="-g -O2" \
-		STAGE1_CFLAGS="-g -O2" \
-		CFLAGS_FOR_TARGET="-g -O2" $(PARALLEL) bootstrap)
-
-install: all
-	(cd $(VER)-i386-build; env - \
-	    CC=$(GCC) \
-	    CFLAGS="-g -O2" \
-	    STAGE1_CFLAGS="-g -O2" \
-	    CFLAGS_FOR_TARGET="-g -O2" \
-	    DESTDIR=$(DESTDIR) \
-	    PATH=$(PATH) \
-	    MAKE=gmake gmake \
-		CFLAGS="-g -O2" \
-		STAGE1_CFLAGS="-g -O2" \
-		CFLAGS_FOR_TARGET="-g -O2" $(PARALLEL) install)
-
-$(VER)-i386-build/config.status: $(VER)-i386-build $(VER.32)/configure
-	(cd $(VER)-i386-build; env - \
-	    CC=$(GCC) \
-	    CFLAGS="-g -O2" \
-	    DESTDIR=$(DESTDIR) \
-	    PATH=$(PATH) \
-	    MAKE=gmake \
-	../$(VER.32)/configure \
-		--prefix=/usr \
-		--with-ld=/usr/bin/ld \
-		--without-gnu-ld \
-		--with-gnu-as \
-		--with-as=$(DESTDIR)/usr/gnu/bin/gas \
-		--enable-languages="c,c++" \
-		--enable-shared \
-		--with-gmp=/opt/local \
-		--with-mpfr=/opt/local \
-		--disable-nls \
-		--with-included-gettext)
-
-$(VER)-i386-build:
-	mkdir -p $@

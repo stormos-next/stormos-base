@@ -19,6 +19,7 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012, Joyent, Inc.  All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 VER =	wget-1.12
@@ -27,11 +28,12 @@ include ../Makefile.defs
 
 AUTOCONF_ENV += \
 	LD_OPTIONS="-M $(BASE)/mapfile_noexstk" \
-	PERL=/usr/perl5/5.12/bin/perl \
-	POD2MAN=/usr/perl5/5.12/bin/pod2man
+	PERL=/usr/perl5/5.10.0/bin/perl \
+	POD2MAN=/usr/perl5/5.10.0/bin/pod2man
 AUTOCONF_OPTS += \
 	--sysconfdir=/etc \
 	--with-ssl \
+	--with-libssl-prefix=$(DESTDIR)/usr \
 	--infodir=/usr/share/info \
 	--disable-rpath
 

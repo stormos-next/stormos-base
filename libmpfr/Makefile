@@ -18,27 +18,22 @@
 #
 # CDDL HEADER END
 #
-# Copyright (c) 2012, Joyent, Inc.  All rights reserved.
-# Copyright (c) 2012 Andrew Stormont.  All rights reserved.
+# Copyright (c) 2013 Andrew Stormont. All rights reserved.
 #
 
-VER =	binutils-2.22
+VER =	mpfr-3.1.1
 
 include ../Makefile.defs
 
-TARBALL =		$(VER).tar.bz2
-TARBALL_COMPRESS =	-j
-AUTOCONF_OPTS = \
-	--prefix=/usr/gnu \
-	--enable-64-bit-bfd \
-	--program-prefix=g
+GCC =	/opt/gcc-3.4.3/bin/gcc
 
+AUTOCONF_OPTS += \
+	--includedir=/usr/include/mpfr \
+	--with-gmp-include=$(DESTDIR)/usr/include/gmp
+
+# help borken bootstrap gcc (3.4.3) find libgcc_s.co.1
 AUTOCONF_ENV += \
-	CC=/opt/gcc-3.4.3/bin/gcc \
-	CXX=/opt/gcc-3.4.3/bin/g++ \
-	DESTDIR=$(DESTDIR) \
-	MAKE=gmake \
-	CONFIG_SHELL=/bin/bash
+	LD_LIBRARY_PATH=/opt/gcc-3.4.3/lib
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf
