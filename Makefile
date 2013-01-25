@@ -81,6 +81,7 @@ BUILD_SUBDIRS = \
 	gcc4 \
 	libgmp \
 	libmpfr \
+	m4 \
 	make
 
 NAME =	illumos-extra
@@ -103,6 +104,7 @@ strap: $(STRAP_SUBDIRS)
 
 curl: libz openssl1x libidn
 gcc4: libgmp libmpfr flex binutils
+flex: m4
 gzip: libz
 libmpfr: libgmp
 make: gcc4
