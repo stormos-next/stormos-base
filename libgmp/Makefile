@@ -31,11 +31,6 @@ TARBALL_COMPRESS =	-j
 PATCHES =	Patches/*
 PATCHSTRIP = 0
 
-# Regen makefiles after patching
-FROB_SENTINEL.32 = \
-	(mkdir -p $(DESTDIR)/usr/share/aclocal ; cd $(VER.32) ; \
-	ACLOCAL='aclocal -I$(DESTDIR)/usr/share/aclocal' autoreconf -ivf)
-
 GCC =	/opt/gcc-3.4.3/bin/gcc
 GXX =	/opt/gcc-3.4.3/bin/g++
 

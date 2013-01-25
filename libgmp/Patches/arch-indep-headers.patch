@@ -35,3 +35,151 @@
  lib_LTLIBRARIES = libgmp.la $(GMPXX_LTLIBRARIES_OPTION)
  
  BUILT_SOURCES = gmp.h
+--- Makefile.in.bak	Tue Dec 18 20:05:16 2012
++++ Makefile.in	Fri Jan 25 15:11:41 2013
+@@ -155,7 +155,7 @@
+   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)" \
+-	"$(DESTDIR)$(includeexecdir)"
++	"$(DESTDIR)$(includedir)"
+ LTLIBRARIES = $(lib_LTLIBRARIES)
+ am__DEPENDENCIES_1 = $(MPF_OBJECTS) $(MPZ_OBJECTS) $(MPQ_OBJECTS) \
+ 	$(MPN_OBJECTS) $(PRINTF_OBJECTS) $(SCANF_OBJECTS) \
+@@ -207,7 +207,7 @@
+ 	installcheck-recursive installdirs-recursive pdf-recursive \
+ 	ps-recursive uninstall-recursive
+ am__include_HEADERS_DIST = gmpxx.h
+-HEADERS = $(include_HEADERS) $(nodist_includeexec_HEADERS)
++HEADERS = $(include_HEADERS) $(nodist_include_HEADERS)
+ RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
+   distclean-recursive maintainer-clean-recursive
+ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
+@@ -327,7 +327,6 @@
+ M4 = @M4@
+ MAINT = @MAINT@
+ MAKEINFO = @MAKEINFO@
+-MANIFEST_TOOL = @MANIFEST_TOOL@
+ MKDIR_P = @MKDIR_P@
+ NM = @NM@
+ NMEDIT = @NMEDIT@
+@@ -361,7 +360,6 @@
+ abs_srcdir = @abs_srcdir@
+ abs_top_builddir = @abs_top_builddir@
+ abs_top_srcdir = @abs_top_srcdir@
+-ac_ct_AR = @ac_ct_AR@
+ ac_ct_CC = @ac_ct_CC@
+ ac_ct_CXX = @ac_ct_CXX@
+ ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
+@@ -442,19 +440,8 @@
+ 	mini-gmp/mini-gmp.c mini-gmp/mini-gmp.h \
+ 	mini-gmp/tests/Makefile mini-gmp/tests/run-tests
+ @WANT_CXX_TRUE@GMPXX_HEADERS_OPTION = gmpxx.h
+-
+-# gmp.h and mp.h are architecture dependent, mainly since they encode the
+-# limb size used in libgmp.  For that reason they belong under $exec_prefix
+-# not $prefix, strictly speaking.
+-#
+-# $exec_prefix/include is not in the default include path for gcc built to
+-# the same $prefix and $exec_prefix, which might mean gmp.h is not found,
+-# but anyone knowledgeable enough to be playing with exec_prefix will be able
+-# to address that.
+-#
+-includeexecdir = $(exec_prefix)/include
+ include_HEADERS = $(GMPXX_HEADERS_OPTION)
+-nodist_includeexec_HEADERS = gmp.h
++nodist_include_HEADERS = gmp.h
+ lib_LTLIBRARIES = libgmp.la $(GMPXX_LTLIBRARIES_OPTION)
+ BUILT_SOURCES = gmp.h fac_table.h fib_table.h mpn/fib_table.c \
+ 	mp_bases.h mpn/mp_bases.c trialdivtab.h mpn/jacobitab.h \
+@@ -768,26 +755,26 @@
+ 	test -n "$$files" || exit 0; \
+ 	echo " ( cd '$(DESTDIR)$(includedir)' && rm -f" $$files ")"; \
+ 	cd "$(DESTDIR)$(includedir)" && rm -f $$files
+-install-nodist_includeexecHEADERS: $(nodist_includeexec_HEADERS)
++install-nodist_includeHEADERS: $(nodist_include_HEADERS)
+ 	@$(NORMAL_INSTALL)
+-	test -z "$(includeexecdir)" || $(MKDIR_P) "$(DESTDIR)$(includeexecdir)"
+-	@list='$(nodist_includeexec_HEADERS)'; test -n "$(includeexecdir)" || list=; \
++	test -z "$(includedir)" || $(MKDIR_P) "$(DESTDIR)$(includedir)"
++	@list='$(nodist_include_HEADERS)'; test -n "$(includedir)" || list=; \
+ 	for p in $$list; do \
+ 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+ 	  echo "$$d$$p"; \
+ 	done | $(am__base_list) | \
+ 	while read files; do \
+-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(includeexecdir)'"; \
+-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(includeexecdir)" || exit $$?; \
++	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(includedir)'"; \
++	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(includedir)" || exit $$?; \
+ 	done
+ 
+-uninstall-nodist_includeexecHEADERS:
++uninstall-nodist_includeHEADERS:
+ 	@$(NORMAL_UNINSTALL)
+-	@list='$(nodist_includeexec_HEADERS)'; test -n "$(includeexecdir)" || list=; \
++	@list='$(nodist_include_HEADERS)'; test -n "$(includedir)" || list=; \
+ 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+ 	test -n "$$files" || exit 0; \
+-	echo " ( cd '$(DESTDIR)$(includeexecdir)' && rm -f" $$files ")"; \
+-	cd "$(DESTDIR)$(includeexecdir)" && rm -f $$files
++	echo " ( cd '$(DESTDIR)$(includedir)' && rm -f" $$files ")"; \
++	cd "$(DESTDIR)$(includedir)" && rm -f $$files
+ 
+ # This directory's subdirectories are mostly independent; you can cd
+ # into them and run `make' without going through this Makefile.
+@@ -1108,7 +1095,7 @@
+ all-am: Makefile $(LTLIBRARIES) $(HEADERS) config.h
+ installdirs: installdirs-recursive
+ installdirs-am:
+-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)" "$(DESTDIR)$(includeexecdir)"; do \
++	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)" "$(DESTDIR)$(includedir)"; do \
+ 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+ 	done
+ install: $(BUILT_SOURCES)
+@@ -1162,7 +1149,7 @@
+ 
+ info-am:
+ 
+-install-data-am: install-includeHEADERS
++install-data-am: install-includeHEADERS install-nodist_includeHEADERS
+ 	@$(NORMAL_INSTALL)
+ 	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
+ install-dvi: install-dvi-recursive
+@@ -1169,8 +1156,7 @@
+ 
+ install-dvi-am:
+ 
+-install-exec-am: install-libLTLIBRARIES \
+-	install-nodist_includeexecHEADERS
++install-exec-am: install-libLTLIBRARIES
+ 
+ install-html: install-html-recursive
+ 
+@@ -1212,7 +1198,7 @@
+ ps-am:
+ 
+ uninstall-am: uninstall-includeHEADERS uninstall-libLTLIBRARIES \
+-	uninstall-nodist_includeexecHEADERS
++	uninstall-nodist_includeHEADERS
+ 
+ .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) all check \
+ 	ctags-recursive install install-am install-data-am \
+@@ -1231,7 +1217,7 @@
+ 	install-exec install-exec-am install-html install-html-am \
+ 	install-includeHEADERS install-info install-info-am \
+ 	install-libLTLIBRARIES install-man \
+-	install-nodist_includeexecHEADERS install-pdf install-pdf-am \
++	install-nodist_includeHEADERS install-pdf install-pdf-am \
+ 	install-ps install-ps-am install-strip installcheck \
+ 	installcheck-am installdirs installdirs-am maintainer-clean \
+ 	maintainer-clean-generic mostlyclean mostlyclean-compile \
+@@ -1238,7 +1224,7 @@
+ 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+ 	tags tags-recursive uninstall uninstall-am \
+ 	uninstall-includeHEADERS uninstall-libLTLIBRARIES \
+-	uninstall-nodist_includeexecHEADERS
++	uninstall-nodist_includeHEADERS
+ 
+ 
+ install-data-hook:
