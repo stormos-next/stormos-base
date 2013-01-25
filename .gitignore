@@ -5,6 +5,7 @@
 /coreutils/coreutils-8.13-32
 /curl/curl-7.21.2-32
 /dialog/dialog-1.1-20111020-32
+/flex/flex-2.5.37-32
 /g11n/proto/
 /g11n/src/lib/iconv/common/amd64/
 /g11n/src/lib/iconv/common/*.o

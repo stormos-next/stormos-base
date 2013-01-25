@@ -77,6 +77,7 @@ STRAP_SUBDIRS = \
 
 BUILD_SUBDIRS = \
 	binutils \
+	flex \
 	gcc4 \
 	libgmp \
 	libmpfr \
@@ -101,7 +102,7 @@ all: $(BUILD_SUBDIRS) $(SUBDIRS)
 strap: $(STRAP_SUBDIRS)
 
 curl: libz openssl1x libidn
-gcc4: libgmp libmpfr binutils
+gcc4: libgmp libmpfr flex binutils
 gzip: libz
 libmpfr: libgmp
 make: gcc4
