@@ -48,6 +48,9 @@ AUTOCONF_OPTS += \
 	--disable-nls \
 	--with-included-gettext
 
+AUTOCONF_ENV += \
+	M4=$(DESTDIR)/usr/gnu/bin/m4
+
 # Need to set LD_LIBRARY_PATH so our broken bootstrap compiler (gcc 3.4.3)
 # can find libgcc_s.so.1 and so the compiler built in stage2 can find the
 # new libgmp and libmpfr in the proto dir
