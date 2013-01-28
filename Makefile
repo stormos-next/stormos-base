@@ -90,8 +90,12 @@ DESKTOP_SUBDIRS = \
 	libtiff \
 	libxau \
 	libxcb \
+	libxrandr \
+	libxrender \
 	libxslt \
 	pthread-stubs \
+	randrproto \
+	renderproto \
 	xcb-proto \
 	xcb-util \
 	xcb-util-image \
@@ -162,7 +166,7 @@ make: gcc4
 # DESKTOP_SUBDIRS dependencies 
 #
 e_dbus: ecore eina
-ecore: evas_generic_loaders
+ecore: evas_generic_loaders libxrandr libxrender
 edje: liblua
 eet: libjpeg eina
 efreet: edje
@@ -178,6 +182,8 @@ evas: libjpeg libpng eina libpixman xcb-util-image
 evas_generic_loaders: evas
 imlib: libtiff libgif
 libxcb: libxslt xcb-proto pthread-stubs libxau
+libxrandr: randrproto libxrender
+libxrender: renderproto
 xcb-util: libxcb xcb-proto
 
 #

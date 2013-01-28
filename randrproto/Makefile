@@ -21,36 +21,13 @@
 # Copyright (c) 2013 Andrew Stormont. All rights reserved.
 #
 
-VER =	ecore-1.7.5
+VER =	randrproto-1.4.0
 
 include ../Makefile.defs
 
-# Use libraries from Joergs X distribution
-CFLAGS += \
-	-I$(DESTDIR)/usr/X11R6/include \
-	-I/usr/X11R6/include \
-	-DXK_MISCELLANY
-
-LDFLAGS += \
-	-L$(DESTDIR)/usr/X11R6/lib \
-	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib
-
-AUTOCONF_ENV += \
-	PKG_CONFIG_PATH=/usr/X11R6/lib/pkgconfig
-
-# ecore requires libsocket
-AUTOCONF_ENV += \
-	LIBS="-lsocket"
-
-# Disable Xcomposite as our versions too old
-AUTOCONF_OPTS += \
-	--enable-ecore-x \
-	--enable-ecore-x-input \
-	--enable-ecore-x-randr \
-	--disable-ecore-x-composite \
-	--enable-ecore-evas-software-buffer \
-	--enable-ecore-evas-software-x11
+# Put this with the rest of the X stuff
+AUTOCONF_OPTS = \
+	--prefix=/usr/X11R6
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

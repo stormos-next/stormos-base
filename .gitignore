@@ -70,6 +70,8 @@
 /libxcb/libxcb-1.9-32
 /libxml/libxml2-2.7.6-64
 /libxml/libxml2-2.7.6-32
+/libxrandr/libXrandr-1.4.0-32
+/libxrender/libXrender-0.9.7-32
 /libxslt/libxslt-1.1.28-32
 /libz/zlib-1.2.3-32
 /libz/zlib-1.2.3-64
@@ -90,6 +92,8 @@
 /pkg-config/pkg-config-lite-0.28-1-32
 /proto
 /pthread-stubs/libpthread-stubs-0.3-32
+/randrproto/randrproto-1.4.0-32
+/renderproto/renderproto-0.11-32
 /rsync/rsync-3.0.6-32
 /rsyslog/rsyslog-5.8.9-32
 /screen/screen-4.0.3-32
