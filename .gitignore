@@ -4,6 +4,7 @@
 /bison/bison-2.7-32
 /bzip2/bzip2-1.0.6
 /bzip2/bzgrep.tmp
+/compositeproto/compositeproto-0.4-32
 /coreutils/coreutils-8.13-32
 /curl/curl-7.27.0-32
 /cpp/cpp
@@ -68,6 +69,7 @@
 /libtiff/tiff-4.0.3-32
 /libxau/libXau-1.0.7-32
 /libxcb/libxcb-1.9-32
+/libxcomposite/libXcomposite-0.4.4-32
 /libxml/libxml2-2.7.6-64
 /libxml/libxml2-2.7.6-32
 /libxrandr/libXrandr-1.4.0-32

@@ -64,6 +64,7 @@ SUBDIRS = \
 	wget
 
 DESKTOP_SUBDIRS = \
+	compositeproto \
 	e_dbus \
 	ecore \
 	edje \
@@ -90,6 +91,7 @@ DESKTOP_SUBDIRS = \
 	libtiff \
 	libxau \
 	libxcb \
+	libxcomposite \
 	libxrandr \
 	libxrender \
 	libxslt \
@@ -181,6 +183,7 @@ ethumb: edje emotion
 evas: libjpeg libpng eina libpixman xcb-util-image
 evas_generic_loaders: evas
 imlib: libtiff libgif
+libxcomposite: compositeproto
 libxcb: libxslt xcb-proto pthread-stubs libxau
 libxrandr: randrproto libxrender
 libxrender: renderproto

@@ -21,35 +21,30 @@
 # Copyright (c) 2013 Andrew Stormont. All rights reserved.
 #
 
-VER =	ecore-1.7.5
+VER = 	libXcomposite-0.4.4
 
 include ../Makefile.defs
 
-# Use libraries from Joergs X distribution
-CFLAGS += \
-	-I$(DESTDIR)/usr/X11R6/include \
-	-I/usr/X11R6/include \
-	-DXK_MISCELLANY
+# Put this with the rest of the X stuff
+AUTOCONF_OPTS = \
+	--prefix=/usr/X11R6
 
-LDFLAGS += \
-	-L$(DESTDIR)/usr/X11R6/lib \
+# Convince libXcomposite that xlibs are installed
+XCOMPOSITE_CFLAGS = \
+	-I$(DESTDIR)/usr/X11R6/include \
+	-I/usr/X11R6/include
+
+XCOMPOSITE_LIBS = \
 	-L/usr/X11R6/lib \
 	-R/usr/X11R6/lib
 
 AUTOCONF_ENV += \
-	PKG_CONFIG_PATH=/usr/X11R6/lib/pkgconfig
+	XCOMPOSITE_CFLAGS="$(XCOMPOSITE_CFLAGS)" \
+	XCOMPOSITE_LIBS="$(XCOMPOSITE_LIBS)"
 
-# ecore requires libsocket
+# Use xfixes from Joergs X distribution
 AUTOCONF_ENV += \
-	LIBS="-lsocket"
-
-AUTOCONF_OPTS += \
-	--enable-ecore-x \
-	--enable-ecore-x-input \
-	--enable-ecore-x-randr \
-	--enable-ecore-x-composite \
-	--enable-ecore-evas-software-buffer \
-	--enable-ecore-evas-software-x11
+	PKG_CONFIG_PATH=/usr/X11R6/lib/pkgconfig
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf
