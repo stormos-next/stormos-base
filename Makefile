@@ -27,7 +27,8 @@
 BASE =		$(PWD)
 DESTDIR =	$(BASE)/proto
 PATH =		$(DESTDIR)/usr/bin:/usr/bin:/usr/sbin:/sbin:/opt/csw/bin
-SUBDIRS = \
+
+BASE_SUBDIRS = \
 	bash \
 	bind \
 	bzip2 \
@@ -103,18 +104,7 @@ DESKTOP_SUBDIRS = \
 	xcb-util-image \
 	xcb-util-keysyms
 
-STRAP_SUBDIRS = \
-	cpp \
-	bzip2 \
-	libexpat \
-	libidn \
-	libm \
-	libxml \
-	libz \
-	nss-nspr \
-	openssl1x
-
-BUILD_SUBDIRS = \
+TOOLCHAIN_SUBDIRS = \
 	binutils \
 	bison \
 	flex \
@@ -139,13 +129,8 @@ GITDESCRIBE = \
 
 TARBALL =	$(NAME)-$(BRANCH)-$(TIMESTAMP)-$(GITDESCRIBE).tgz
 
-all: $(BUILD_SUBDIRS) $(SUBDIRS)
-
-strap: $(STRAP_SUBDIRS)
-
-build: $(BUILD_SUBDIRS)
-
-desktop: $(DESKTOP_SUBDIRS)
+# Get this in before make starts processing targets
+.DEFAULT_GOAL = build 
 
 curl: libz openssl1x libidn
 gzip: libz
@@ -157,7 +142,7 @@ wget: openssl1x libidn
 openldap: openssl1x
 
 #
-# BUILD_SUBDIRS dependencies
+# toolchain dependencies
 #
 gcc4: libgmp libmpfr m4 flex bison binutils
 flex: m4
@@ -165,7 +150,7 @@ libmpfr: libgmp
 make: gcc4
 
 #
-# DESKTOP_SUBDIRS dependencies 
+# enlightenment dependencies 
 #
 e_dbus: ecore eina
 ecore: evas_generic_loaders libxrandr libxrender
@@ -190,50 +175,93 @@ libxrender: renderproto
 xcb-util: libxcb xcb-proto
 
 #
-# pkg-config may be installed. This will actually only hurt us rather than help
-# us. pkg-config is based as a part of the blastwave packages and will pull in
-# versions of libraries that we have in /opt/csw rather than using the ones in
-# /usr that we want. PKG_CONFIG_LIBDIR controls the actual path. This
-# environment variable nulls out the search path. Other vars just control what
-# gets appended.
+# Toolchain rules: Used to build the and stage the gnu toolchain
+# in the proto area.  It will be used instead of the host tools.
 #
 
-$(BUILD_SUBDIRS): FRC
-	(cd $@ && \
-	    PKG_CONFIG_LIBDIR="$(DESTDIR)/usr/lib/pkgconfig" \
-	    PKG_CONFIG_SYSROOT_DIR="$(DESTDIR)" \
+# build-(subdirname): build and install into protodir
+$(TOOLCHAIN_SUBDIRS:%=build-%): FRC
+	(cd $(patsubst build-%,%,$@) && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
-$(SUBDIRS): $(BUILD_SUBDIRS)
-	(cd $@ && \
-	    PKG_CONFIG_LIBDIR="$(DESTDIR)/usr/lib/pkgconfig" \
-	    PKG_CONFIG_SYSROOT_DIR="$(DESTDIR)" \
+# install-(subdirname): install onto host
+$(TOOLCHAIN_SUBDIRS:%=install-%): FRC
+	(cd $(patsubst install-%,%,$@) && \
+	    STRAP=$(STRAP) \
+	    $(MAKE) DESTDIR=/ install)
+
+# clean-(subdirname): sanitize build directory
+$(TOOLCHAIN_SUBDIRS:%=clean-%): FRC
+	(cd $(patsubst clean-%,%,$@) && \
+	    STRAP=$(STRAP) \
+	    $(MAKE) DESTDIR=$(DESTDIR) clean)
+
+build-toolchain: $(TOOLCHAIN_SUBDIRS:%=build-%)
+install-toolchain: $(TOOLCHAIN_SUBDIRS:%=install-%)
+clean-toolchain: $(TOOLCHAIN_SUBDIRS:%=clean-%)
+
+#
+# Enlightenment rules: Used to build and stage enlightenment
+# in the proto area.  It's headers and libraries will be used.
+#
+
+# build-(subdirname): build and install into protodir
+$(DESKTOP_SUBDIRS:%=build-%): FRC
+	(cd $(patsubst build-%,%,$@) && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
-$(DESKTOP_SUBDIRS): FRC
-	(cd $@ && \
-	    PKG_CONFIG_LIBDIR="$(DESTDIR)/usr/lib/pkgconfig" \
-	    PKG_CONFIG_SYSROOT_DIR="$(DESTDIR)" \
+# install-(subdirname): install onto host
+$(DESKTOP_SUBDIRS:%=install-%): FRC
+	(cd $(patsubst install-%,%,$@) && \
+	    STRAP=$(STRAP) \
+	    $(MAKE) DESTDIR=/ install)
+
+# clean-(subdirname): sanitize build directory
+$(DESKTOP_SUBDIRS:%=clean-%): FRC
+	(cd $(patsubst clean-%,%,$@) && \
+	    STRAP=$(STRAP) \
+	    $(MAKE) DESTDIR=$(DESTDIR) clean)
+
+build-desktop: $(DESKTOP_SUBDIRS:%=build-%)
+install-desktop: $(DESKTOP_SUBDIRS:%=install-%)
+clean-toolchain: $(DESKTOP_SUBDIRS:%=clean-%)
+
+#
+# Base rules: Used to build the basic utilities and libraries
+# TODO: Finalize this!
+#
+
+# build-(subdirname)
+$(BASE_SUBDIRS:%=build-%): FRC
+	(cd $(patsubst build-%,%,$@) && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
-$(DESKTOP_SUBDIRS:%=install_%): FRC
-	(cd $(patsubst install_%,%,$@) && \
-	    $(MAKE) install DESTDIR=/)
+$(BASE_SUBDIRS:%=install-%): FRC
+	(cd $(patsubst install-%,%,$@) && \
+	    STRAP=$(STRAP) \
+	    $(MAKE) DESTDIR=/ install)
 
-install: $(SUBDIRS) $(BUILD_SUBDIRS)
+$(BASE_SUBDIRS:%=clean-%): FRC
+	(cd $(patsubst clean-%,%,$@) && \
+	    STRAP=$(STRAP) \
+	    $(MAKE) DESTDIR=$(DESTDIR) clean)
 
-install_strap: $(STRAP_SUBDIRS) $(BUILD_SUBDIRS)
+build-base: $(BASE_SUBDIRS:%=build-%)
+install-base: $(BASE_SUBDIRS:%=install-%)
+clean-base: $(BASE_SUBDIRS:%=clean-%)
 
-install_desktop: $(DESKTOP_SUBDIRS:%=install_%) 
+#
+# Default rules.  Build/Clean/Install everything.
+#
 
-clean: 
-	-for dir in $(SUBDIRS) $(BUILD_SUBDIRS); \
-	    do (cd $$dir; $(MAKE) DESTDIR=$(DESTDIR) clean); done
-	-rm -rf proto
+build: $(TOOLCHAIN_SUBDIRS:%=build-%) $(BASE_SUBDIRS:%=build-%) $(DESKTOP_SUBDIRS:%=build-%)
+install: $(TOOLCHAIN_SUBDIRS:%=install-%) $(BASE_SUBDIRS:%=build-%) $(DESKTOP_SUBDIRS:%=build-%)
+clean: $(TOOLCHAIN_SUBDIRS:%=clean-%) $(BASE_SUBDIRS:%=clean-%) $(DESKTOP_SUBDIRS:%=clean-%)
 
+# Extra joyent stuff
 manifest:
 	cp manifest $(DESTDIR)/$(DESTNAME)
 
