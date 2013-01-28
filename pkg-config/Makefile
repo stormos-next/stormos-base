@@ -31,5 +31,9 @@ include ../Makefile.defs
 # weirdness that the mainline version does.
 #
 
+# avoid error on reinstall of symlinks already exist
+AUTOCONF_ENV += \
+	LN="ln -sf"
+
 include ../Makefile.targ
 include ../Makefile.targ.autoconf
