@@ -1,0 +1,49 @@
+--- ./src/modules/engines/software_x11/evas_xcb_outbuf.c.bak	Sun Jan 27 18:17:37 2013
++++ ./src/modules/engines/software_x11/evas_xcb_outbuf.c	Sun Jan 27 18:21:52 2013
+@@ -589,7 +589,7 @@
+         Eina_Array_Iterator it;
+         Eina_Rectangle *rect;
+         unsigned int i = 0;
+-        pixman_region16_t tmpr;
++        pixman_region16_t *tmpr = pixman_region_create();
+ 
+         im = buf->priv.onebuf;
+         obr = im->extended_info;
+@@ -630,7 +630,7 @@
+                   xr.w = rect->h;
+                   xr.h = rect->w;
+                }
+-             pixman_region_union_rect(&tmpr, &tmpr, xr.x, xr.y, xr.w, xr.h);
++             pixman_region_union_rect(tmpr, tmpr, xr.x, xr.y, xr.w, xr.h);
+              if (buf->priv.debug)
+                evas_software_xcb_outbuf_debug_show(buf, buf->priv.x11.xcb.win, 
+                                                    xr.x, xr.y, xr.w, xr.h);
+@@ -640,8 +640,8 @@
+         xcb_set_clip_rectangles(buf->priv.x11.xcb.conn, 
+                                 XCB_CLIP_ORDERING_YX_BANDED, 
+                                 buf->priv.x11.xcb.gc, 0, 0, 
+-                                pixman_region_n_rects(&tmpr), 
+-                                (const xcb_rectangle_t *)pixman_region_rectangles(&tmpr, NULL));
++                                pixman_region_n_rects(tmpr), 
++                                (const xcb_rectangle_t *)pixman_region_rectangles(tmpr, NULL));
+         if (obr->xcbob)
+           evas_software_xcb_output_buffer_paste(obr->xcbob, 
+                                                 buf->priv.x11.xcb.win, 
+@@ -651,14 +651,14 @@
+              xcb_set_clip_rectangles(buf->priv.x11.xcb.conn, 
+                                      XCB_CLIP_ORDERING_YX_BANDED, 
+                                      buf->priv.x11.xcb.gcm, 0, 0, 
+-                                     pixman_region_n_rects(&tmpr), 
+-                                     (const xcb_rectangle_t *)pixman_region_rectangles(&tmpr, NULL));
++                                     pixman_region_n_rects(tmpr), 
++                                     (const xcb_rectangle_t *)pixman_region_rectangles(tmpr, NULL));
+              evas_software_xcb_output_buffer_paste(obr->mask, 
+                                                    buf->priv.x11.xcb.mask, 
+                                                    buf->priv.x11.xcb.gcm, 
+                                                    0, 0, 0);
+           }
+-        pixman_region_fini(&tmpr);
++        pixman_region_destroy(tmpr);
+         buf->priv.synced = EINA_FALSE;
+      }
+    else 

@@ -1,0 +1,11 @@
+--- src/c_client.py.bak	Sun Jan 27 13:54:41 2013
++++ src/c_client.py	Sun Jan 27 14:05:26 2013
+@@ -2892,6 +2892,8 @@
+         sys.stdout.write('man_MANS = ')
+ 
+ # Import the module class
++if 'XCBPROTO_XCBPYTHONDIR' in os.environ:
++    sys.path.append(os.environ['XCBPROTO_XCBPYTHONDIR'])
+ try:
+     from xcbgen.state import Module
+     from xcbgen.xtypes import *

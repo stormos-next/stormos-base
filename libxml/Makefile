@@ -54,12 +54,12 @@ AUTOCONF_OPTS += \
 PATCHES =	Patches/*
 
 # Regen makefiles after patching
-FROB_SENTINEL.32 = \
-	(mkdir -p $(DESTDIR)/usr/share/aclocal ; cd $(VER.32) ; \
-	ACLOCAL='aclocal -I$(DESTDIR)/usr/share/aclocal' autoreconf -ivf)
-FROB_SENTINEL.64 = \
-	(mkdir -p $(DESTDIR)/usr/share/aclocal ; cd $(VER.64) ; \
-	ACLOCAL='aclocal -I$(DESTDIR)/usr/share/aclocal' autoreconf -ivf)
+#FROB_SENTINEL.32 = \
+#	(mkdir -p $(DESTDIR)/usr/share/aclocal ; cd $(VER.32) ; \
+#	ACLOCAL='aclocal -I$(DESTDIR)/usr/share/aclocal' autoreconf -ivf)
+#FROB_SENTINEL.64 = \
+#	(mkdir -p $(DESTDIR)/usr/share/aclocal ; cd $(VER.64) ; \
+#	ACLOCAL='aclocal -I$(DESTDIR)/usr/share/aclocal' autoreconf -ivf)
 
 include ../Makefile.targ
 

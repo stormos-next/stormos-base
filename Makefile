@@ -52,7 +52,6 @@ SUBDIRS = \
 	ntp \
 	openldap \
 	openssl \
-	openssl1x \
 	pbzip2 \
 	perl \
 	rsync \
@@ -63,6 +62,40 @@ SUBDIRS = \
 	uuid \
 	vim \
 	wget
+
+DESKTOP_SUBDIRS = \
+	e_dbus \
+	ecore \
+	edje \
+	eet \
+	efreet \
+	eina \
+	eio \
+	elementary \
+	embryo \
+	emotion \
+	enlightenment \
+	eterm \
+	ethumb \
+	evas \
+	evas_generic_loaders \
+	imlib \
+	libast \
+	libgif \
+	libiconv \
+	libjpeg \
+	liblua \
+	libpixman \
+	libpng \
+	libtiff \
+	libxau \
+	libxcb \
+	libxslt \
+	pthread-stubs \
+	xcb-proto \
+	xcb-util \
+	xcb-util-image \
+	xcb-util-keysyms
 
 STRAP_SUBDIRS = \
 	cpp \
@@ -83,7 +116,8 @@ BUILD_SUBDIRS = \
 	libgmp \
 	libmpfr \
 	m4 \
-	make
+	make \
+	pkg-config
 
 NAME =	illumos-extra
 
@@ -103,18 +137,48 @@ all: $(BUILD_SUBDIRS) $(SUBDIRS)
 
 strap: $(STRAP_SUBDIRS)
 
+build: $(BUILD_SUBDIRS)
+
+desktop: $(DESKTOP_SUBDIRS)
+
 curl: libz openssl1x libidn
-gcc4: libgmp libmpfr m4 flex bison binutils
-flex: m4
 gzip: libz
-libmpfr: libgmp
-make: gcc4
 node.js: openssl1x libm
 ncurses: libm
 dialog: ncurses
 socat: openssl1x
 wget: openssl1x libidn
 openldap: openssl1x
+
+#
+# BUILD_SUBDIRS dependencies
+#
+gcc4: libgmp libmpfr m4 flex bison binutils
+flex: m4
+libmpfr: libgmp
+make: gcc4
+
+#
+# DESKTOP_SUBDIRS dependencies 
+#
+e_dbus: ecore eina
+ecore: evas_generic_loaders
+edje: liblua
+eet: libjpeg eina
+efreet: edje
+eina: libiconv
+eio: ecore
+elementary: eet edje embryo
+embryo: eio
+emotion: edje
+enlightenment: libxcb xcb-util xcb-util-keysyms emotion
+eterm: libast imlib
+ethumb: edje emotion
+evas: libjpeg libpng eina libpixman xcb-util-image
+evas_generic_loaders: evas
+imlib: libtiff libgif
+libxcb: libxslt xcb-proto pthread-stubs libxau
+xcb-util: libxcb xcb-proto
 
 #
 # pkg-config may be installed. This will actually only hurt us rather than help
@@ -127,19 +191,34 @@ openldap: openssl1x
 
 $(BUILD_SUBDIRS): FRC
 	(cd $@ && \
-	    PKG_CONFIG_LIBDIR="" \
+	    PKG_CONFIG_LIBDIR="$(DESTDIR)/usr/lib/pkgconfig" \
+	    PKG_CONFIG_SYSROOT_DIR="$(DESTDIR)" \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
 $(SUBDIRS): $(BUILD_SUBDIRS)
 	(cd $@ && \
-	    PKG_CONFIG_LIBDIR="" \
+	    PKG_CONFIG_LIBDIR="$(DESTDIR)/usr/lib/pkgconfig" \
+	    PKG_CONFIG_SYSROOT_DIR="$(DESTDIR)" \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
+
+$(DESKTOP_SUBDIRS): FRC
+	(cd $@ && \
+	    PKG_CONFIG_LIBDIR="$(DESTDIR)/usr/lib/pkgconfig" \
+	    PKG_CONFIG_SYSROOT_DIR="$(DESTDIR)" \
+	    STRAP=$(STRAP) \
+	    $(MAKE) DESTDIR=$(DESTDIR) install)
+
+$(DESKTOP_SUBDIRS:%=install_%): FRC
+	(cd $(patsubst install_%,%,$@) && \
+	    $(MAKE) install DESTDIR=/)
 
 install: $(SUBDIRS) $(BUILD_SUBDIRS)
 
 install_strap: $(STRAP_SUBDIRS) $(BUILD_SUBDIRS)
+
+install_desktop: $(DESKTOP_SUBDIRS:%=install_%) 
 
 clean: 
 	-for dir in $(SUBDIRS) $(BUILD_SUBDIRS); \

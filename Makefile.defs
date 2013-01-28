@@ -57,9 +57,9 @@ ifneq ($(STRAP),strap)
 	ifneq ($(shell ld --help 2>&1 | grep assert-deflib),)
 		GENLDFLAGS += -Wl,-zassert-deflib
 	endif
-	ifneq ($(shell ld --help 2>&1 | grep fatal-warnings),)
-		GENLDFLAGS += -Wl,-zfatal-warnings
-	endif
+#	ifneq ($(shell ld --help 2>&1 | grep fatal-warnings),)
+#		GENLDFLAGS += -Wl,-zfatal-warnings
+#	endif
 endif
 T32_LDFLAGS =	$(SYSLIBDIRS:%=-L$(DESTDIR)/%)
 T64_LDFLAGS =	$(SYSLIBDIRS:%=-L$(DESTDIR)/%/64)
@@ -84,9 +84,11 @@ AUTOCONF_OUT.32 =	$(VER.32)/$(AUTOCONF_OUT)
 AUTOCONF_OUT.64 =	$(VER.64)/$(AUTOCONF_OUT)
 
 AUTOCONF_PREFIX =	/usr
+AUTOCONF_SYSCONFDIR =	/etc
 
 AUTOCONF_ENV = \
-	PKG_CONFIG_LIBDIR="" \
+	PKG_CONFIG_LIBDIR="$(DESTDIR)/usr/lib/pkgconfig" \
+	PKG_CONFIG_SYSROOT_DIR="$(DESTDIR)" \
 	$(AUTOCONF_MAKE) \
 	$(AUTOCONF_CC) \
 	$(AUTOCONF_CXX) \
@@ -96,7 +98,8 @@ AUTOCONF_ENV = \
 	$(AUTOCONF_LIBS)
 
 AUTOCONF_ENV.64 = \
-	PKG_CONFIG_LIBDIR="" \
+	PKG_CONFIG_LIBDIR="$(DESTDIR)/usr/lib/pkgconfig" \
+	PKG_CONFIG_SYSROOT_DIR="$(DESTDIR)" \
 	$(AUTOCONF_MAKE) \
 	$(AUTOCONF_CC.64) \
 	$(AUTOCONF_CXX.64) \
@@ -106,7 +109,8 @@ AUTOCONF_ENV.64 = \
 	$(AUTOCONF_LIBS.64)
 
 AUTOCONF_OPTS = \
-	--prefix=$(AUTOCONF_PREFIX)
+	--prefix=$(AUTOCONF_PREFIX) \
+	--sysconfdir=$(AUTOCONF_SYSCONFDIR)
 
 AUTOCONF_OPTS.32 = \
 	$(AUTOCONF_OPTS)

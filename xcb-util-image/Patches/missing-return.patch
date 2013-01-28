@@ -1,0 +1,31 @@
+--- image/xcb_image.c.bak	Sun Jan 27 17:05:27 2013
++++ image/xcb_image.c	Sun Jan 27 17:07:37 2013
+@@ -187,6 +187,8 @@
+       assert(0);
+   }
+   assert(0);
++  /* Keep compiler happy */
++  return 0;
+ }
+ 
+ 
+@@ -751,6 +753,8 @@
+   default:
+       assert(0);
+   }
++  /* Keep compiler happy */
++  return 0;
+ }
+ 
+ 
+--- image/xcb_bitops.h.bak	Sun Jan 27 17:14:44 2013
++++ image/xcb_bitops.h	Sun Jan 27 17:15:08 2013
+@@ -210,6 +210,8 @@
+       return XCB_IMAGE_ORDER_LSB_FIRST;
+   }
+   assert(0);
++  /* Keep compiler happy */
++  return 0;
+ }
+ 
+ #endif /* __XCB_BITOPS_H__ */

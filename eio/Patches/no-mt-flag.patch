@@ -1,0 +1,16 @@
+--- configure.bak	Sun Jan 27 05:34:05 2013
++++ configure	Sun Jan 27 05:34:55 2013
+@@ -13356,12 +13356,8 @@
+ 
+ 
+ case "$host_os" in
+-   mingw*)
++   mingw*|solaris*)
+       ;;
+-   solaris*)
+-      _efl_threads_cflags="-mt"
+-      _efl_threads_libs="-mt"
+-      ;;
+    *)
+       _efl_threads_cflags="-pthread"
+       _efl_threads_libs="-pthread"

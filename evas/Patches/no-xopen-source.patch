@@ -1,0 +1,8 @@
+--- src/modules/loaders/psd/evas_image_load_psd.c.bak	Sun Jan 27 05:10:18 2013
++++ src/modules/loaders/psd/evas_image_load_psd.c	Sun Jan 27 05:11:39 2013
+@@ -1,5 +1,3 @@
+-#define _XOPEN_SOURCE
+-
+ #ifdef HAVE_CONFIG_H
+ # include <config.h>
+ #endif

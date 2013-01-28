@@ -1,0 +1,12 @@
+--- src/lib/canvas/evas_font_dir.c.bak	Sun Jan 27 05:03:10 2013
++++ src/lib/canvas/evas_font_dir.c	Sun Jan 27 05:03:43 2013
+@@ -280,7 +280,9 @@
+    FC_WEIGHT_BOLD,
+    FC_WEIGHT_ULTRABOLD,
+    FC_WEIGHT_BLACK,
++#ifdef FC_WEIGHT_EXTRABLACK
+    FC_WEIGHT_EXTRABLACK
++#endif
+ };
+ 
+ # ifdef FC_WIDTH

@@ -1,0 +1,32 @@
+--- src/lib/eina_str.c.bak	Sun Jan 27 20:12:05 2013
++++ src/lib/eina_str.c	Sun Jan 27 20:15:14 2013
+@@ -28,7 +28,7 @@
+ #include <limits.h>
+ #include <ctype.h>
+ 
+-#ifdef HAVE_ICONV
++#if defined(HAVE_ICONV) && !defined(__sun)
+ # include <errno.h>
+ # include <iconv.h>
+ #endif
+@@ -451,7 +451,7 @@
+    return ret;
+ }
+ 
+-#ifdef HAVE_ICONV
++#if defined(HAVE_ICONV) && !defined(__sun)
+ EAPI char *
+ eina_str_convert(const char *enc_from, const char *enc_to, const char *text)
+ {
+@@ -532,9 +532,9 @@
+ EAPI char *
+ eina_str_convert(const char *enc_from __UNUSED__,
+                  const char *enc_to __UNUSED__,
+-                 const char *text __UNUSED__)
++                 const char *text)
+ {
+-   return NULL;
++   return text;
+ }
+ #endif
+ 

@@ -1,0 +1,12 @@
+--- image/xcb_bitops.h.bak	Sun Jan 27 17:09:17 2013
++++ image/xcb_bitops.h	Sun Jan 27 17:11:04 2013
+@@ -37,6 +37,9 @@
+  *
+  * @{
+  */
++#ifndef _X_INLINE
++#define _X_INLINE
++#endif
+ 
+ 
+ /**
