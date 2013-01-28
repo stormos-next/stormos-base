@@ -77,11 +77,9 @@ DESKTOP_SUBDIRS = \
 	embryo \
 	emotion \
 	enlightenment \
-	eterm \
 	ethumb \
 	evas \
 	evas_generic_loaders \
-	imlib \
 	libast \
 	libgif \
 	libiconv \
@@ -163,11 +161,9 @@ elementary: eet edje embryo
 embryo: eio
 emotion: edje
 enlightenment: libxcb xcb-util xcb-util-keysyms emotion
-eterm: libast imlib
 ethumb: edje emotion
 evas: libjpeg libpng eina libpixman xcb-util-image
 evas_generic_loaders: evas
-imlib: libtiff libgif
 libxcomposite: compositeproto
 libxcb: libxslt xcb-proto pthread-stubs libxau
 libxrandr: randrproto libxrender
