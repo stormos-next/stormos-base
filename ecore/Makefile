@@ -44,6 +44,7 @@ AUTOCONF_ENV += \
 	LIBS="-lsocket"
 
 AUTOCONF_OPTS += \
+	--enable-curl \
 	--enable-ecore-x \
 	--enable-ecore-x-input \
 	--enable-ecore-x-randr \

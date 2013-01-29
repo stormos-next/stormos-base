@@ -152,7 +152,7 @@ make: gcc4
 # enlightenment dependencies 
 #
 e_dbus: ecore eina
-ecore: evas_generic_loaders libxrandr libxrender
+ecore: curl evas_generic_loaders libxrandr libxrender
 edje: ecore eet eina embryo liblua
 eet: libz libjpeg eina
 efreet: edje
