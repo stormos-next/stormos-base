@@ -25,6 +25,8 @@ VER =	libiconv-1.14
 
 include ../Makefile.defs
 
+PATCHES = Patches/*
+
 AUTOCONF_OPTS = \
 	--prefix=/usr/gnu
 
