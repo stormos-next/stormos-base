@@ -19,6 +19,7 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012, Joyent, Inc.  All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 VER =	curl-7.27.0
@@ -28,7 +29,9 @@ include ../Makefile.defs
 TARBALL =		$(VER).tar.bz2
 TARBALL_COMPRESS =	-j
 
-AUTOCONF_OPTS +=	--with-ssl=$(DESTDIR)/usr
+AUTOCONF_OPTS += \
+	--with-ssl=$(DESTDIR)/usr \
+	--with-libidn=$(DESTDIR)/usr
 
 PATCHES =	Patches/*
 
