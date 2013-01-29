@@ -94,6 +94,7 @@ DESKTOP_SUBDIRS = \
 	libxrandr \
 	libxrender \
 	libxslt \
+	makedepend \
 	pthread-stubs \
 	randrproto \
 	renderproto \
@@ -171,6 +172,7 @@ libxcomposite: compositeproto
 libxcb: libxslt xcb-proto pthread-stubs libxau
 libxrandr: randrproto libxrender
 libxrender: renderproto
+makedepend: xproto
 xcb-util: xproto libxcb xcb-proto
 xcb-util-image: xproto libxcb xcb-proto
 xcb-util-keysyms: xproto libxcb xcb-proto
