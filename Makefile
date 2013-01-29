@@ -153,8 +153,8 @@ make: gcc4
 #
 e_dbus: ecore eina
 ecore: evas_generic_loaders libxrandr libxrender
-edje: eet embryo liblua
-eet: libjpeg eina
+edje: ecore eet eina embryo liblua
+eet: libz libjpeg eina
 efreet: edje
 eina: libiconv
 eio: ecore
@@ -185,7 +185,7 @@ $(TOOLCHAIN_SUBDIRS): FRC
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
 # install-(subdirname): install onto host
-$(TOOLCHAIN_SUBDIRS:%=install-%): % 
+$(TOOLCHAIN_SUBDIRS:%=install-%): $@ 
 	(cd $(patsubst install-%,%,$@) && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=/ install)
@@ -212,7 +212,7 @@ $(DESKTOP_SUBDIRS): FRC
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
 # install-(subdirname): install onto host
-$(DESKTOP_SUBDIRS:%=install-%): %
+$(DESKTOP_SUBDIRS:%=install-%): $@
 	(cd $(patsubst install-%,%,$@) && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=/ install)
@@ -239,7 +239,7 @@ $(BASE_SUBDIRS): FRC
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
 # install-(subdirname): install onto host
-$(BASE_SUBDIRS:%=install-%): %
+$(BASE_SUBDIRS:%=install-%): $@
 	(cd $(patsubst install-%,%,$@) && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=/ install)
