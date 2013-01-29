@@ -19,6 +19,7 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012, Joyent, Inc.
+# Copyright (c) 2013 Andrew Stormont.
 #
 
 all_autoconf: $(BUILD32:yes=all_autoconf_32) $(BUILD64:yes=all_autoconf_64)
@@ -44,6 +45,19 @@ install_autoconf_64: all
 	    env - PATH=$(PATH) \
 	    ../../tools/installfilter $(MAKE) $(install_PARALLEL) $(OVERRIDES.64) DESTDIR=$(DESTDIR) \
 	    install)
+
+uninstall_autoconf: $(BUILD32:yes=uninstall_autoconf_32) \
+    $(BUILD64:yes=uninstall_autoconf_64)
+
+uninstall_autoconf_32:
+	(cd $(VER.32); \
+	    env - PATH=$(PATH) \
+	    $(MAKE) $(uninstall_PARALLEL) $(OVERRIDES) DESTDIR=$(DESTDIR) uninstall)
+
+uninstall_autoconf_64:
+	(cd $(VER.64); \
+	    env - PATH=$(PATH) \
+	    $(MAKE) $(uninstall_PARALELL) $(OVERRIDES.64) DESTDIR=$(DESTDIR) uninstall)
 
 $(AUTOCONF_OUT.32): $(VER.32)/configure
 	(cd $(VER.32); \

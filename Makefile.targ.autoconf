@@ -19,8 +19,11 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012, Joyent, Inc.
+# Copyright (c) 2013 Andrew Stormont.
 #
 
 all: all_autoconf
 
 install: install_autoconf
+
+uninstall: uninstall_autoconf
