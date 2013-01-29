@@ -33,13 +33,14 @@ AUTOCONF_OPTS = \
 RENDER_CFLAGS = \
 	-I/usr/X11R6/include
 
-RENDER_LDFLAGS = \
+RENDER_LIBS = \
 	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib
+	-R/usr/X11R6/lib \
+	-lX11
 
 AUTOCONF_ENV += \
 	RENDER_CFLAGS="$(RENDER_CFLAGS)" \
-	RENDER_LIBS="$(RENDER_LDFLAGS)"
+	RENDER_LIBS="$(RENDER_LIBS)"
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf
