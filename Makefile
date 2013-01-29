@@ -152,7 +152,7 @@ make: gcc4
 #
 e_dbus: ecore eina
 ecore: evas_generic_loaders libxrandr libxrender
-edje: liblua
+edje: eet embryo liblua
 eet: libjpeg eina
 efreet: edje
 eina: libiconv
@@ -162,13 +162,15 @@ embryo: eio
 emotion: edje
 enlightenment: libxcb xcb-util xcb-util-keysyms emotion
 ethumb: edje emotion
-evas: libjpeg libpng eina libpixman xcb-util-image
+evas: libgif libjpeg libpng eina libpixman xcb-util-image
 evas_generic_loaders: evas
+libpng: libz
 libxcomposite: compositeproto
 libxcb: libxslt xcb-proto pthread-stubs libxau
 libxrandr: randrproto libxrender
 libxrender: renderproto
 xcb-util: libxcb xcb-proto
+xcb-util-image: libxcb xcb-proto
 
 #
 # Toolchain rules: Used to build the and stage the gnu toolchain

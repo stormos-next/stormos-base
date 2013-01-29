@@ -1,0 +1,70 @@
+--- src/modules/loaders/gif/evas_image_load_gif.c.bak	Tue Jan 29 04:17:59 2013
++++ src/modules/loaders/gif/evas_image_load_gif.c	Tue Jan 29 04:21:51 2013
+@@ -684,6 +684,7 @@
+    int                 h;
+    int                 alpha;
+    int                 loop_count = -1;
++   int                 gif_error;
+ 
+    w = 0;
+    h = 0;
+@@ -700,7 +701,7 @@
+         return EINA_FALSE;
+      }
+ 
+-   gif = DGifOpenFileHandle(fd);
++   gif = DGifOpenFileHandle(fd, &gif_error);
+    if (!gif)
+      {
+         if (fd) close(fd);
+@@ -826,6 +827,7 @@
+    GifFileType       *gif;
+    Image_Entry_Frame *frame = NULL;
+    Gif_Frame         *gif_frame = NULL;
++   int                gif_error;
+ 
+ #ifndef __EMX__
+    fd = open(file, O_RDONLY);
+@@ -838,7 +840,7 @@
+         return EINA_FALSE;
+      }
+ 
+-   gif = DGifOpenFileHandle(fd);
++   gif = DGifOpenFileHandle(fd, &gif_error);
+    if (!gif)
+      {
+         if (fd) close(fd);
+@@ -915,6 +917,7 @@
+           {
+              int           fd;
+              GifFileType  *gif;
++             int           gif_error;
+ 
+ #ifndef __EMX__
+              fd = open(file, O_RDONLY);
+@@ -927,7 +930,7 @@
+                   return EINA_FALSE;
+                }
+ 
+-             gif = DGifOpenFileHandle(fd);
++             gif = DGifOpenFileHandle(fd, &gif_error);
+              if (!gif)
+                {
+                   if (fd) close(fd);
+@@ -984,6 +987,7 @@
+    int                 remain_frames = frame_num;
+    double              duration = 0;
+    int                 frame_count = 0;
++   int                 gif_error;
+ 
+    frame_count = ie->frame_count;
+ 
+@@ -1000,7 +1004,7 @@
+ #endif
+    if (fd < 0) return -1;
+ 
+-   gif = DGifOpenFileHandle(fd);
++   gif = DGifOpenFileHandle(fd, gif_error);
+    if (!gif)
+      {
+         if (fd) close(fd);

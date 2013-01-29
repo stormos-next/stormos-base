@@ -43,6 +43,7 @@ EDBUS_LIBS = \
 
 ECORE_CFLAGS = \
 	-I$(DESTDIR)/usr/include/ecore-1 \
+	-I$(DESTDIR)/usr/include/eet-1 \
 	-I$(DESTDIR)/usr/include/edje-1 \
 	-I$(DESTDIR)/usr/include/efreet-1 \
 	-I$(DESTDIR)/usr/include/eina-1 \
