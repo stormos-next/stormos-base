@@ -46,11 +46,13 @@ static int __is_crap_file(const char *path)
 	if (len > 2 && path[len-3] == '.' && path[len-2] == 'l' && path[len-1] == 'a')
 		return 1;
 
+#if 0 // Disable this for now as it can break installs
 	/*
 	 * It's a static library.  Almost as useless to us.
 	 */
 	if (len > 1 && path[len-2] == '.' && path[len-1] == 'a')
 		return 1;
+#endif
 
 	/*
 	 * No idea what the file is.  Assumes all's good.
@@ -328,6 +330,29 @@ int execve(const char *path, const char **argv, const char **envp)
 	 * Couldn't find LD_PRELOAD_* variables to copy over
 	 */
 	return _execve(path, argv, envp);
+}
+
+int rename(const char *oldpath, const char *newpath)
+{
+	int (*_rename)(const char *, const char *) = NULL;
+
+	//fprintf(stderr, "Intercepting rename(%s, %s) call\n", oldpath, newpath);
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_rename == NULL)
+		_rename = (int (*)(const char *, const char *))dlsym(RTLD_NEXT, "rename");
+
+	/*
+	 * If asked to rename a file to a crapfile, unlink the original file instead
+	 */
+	if (__is_crap_file(newpath))
+		(void)unlink(oldpath);
+	else
+		return _rename(oldpath, newpath);
+
+	return 0;
 }
 
 int main(int argc, const char argv)
