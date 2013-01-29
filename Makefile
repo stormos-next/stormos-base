@@ -142,6 +142,7 @@ openldap: openssl1x
 #
 # toolchain dependencies
 #
+bison: flex
 gcc4: libgmp libmpfr m4 flex bison binutils
 flex: m4
 libmpfr: libgmp
