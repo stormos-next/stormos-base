@@ -100,7 +100,8 @@ DESKTOP_SUBDIRS = \
 	xcb-proto \
 	xcb-util \
 	xcb-util-image \
-	xcb-util-keysyms
+	xcb-util-keysyms \
+	xproto
 
 TOOLCHAIN_SUBDIRS = \
 	binutils \
@@ -170,8 +171,9 @@ libxcomposite: compositeproto
 libxcb: libxslt xcb-proto pthread-stubs libxau
 libxrandr: randrproto libxrender
 libxrender: renderproto
-xcb-util: libxcb xcb-proto
-xcb-util-image: libxcb xcb-proto
+xcb-util: xproto libxcb xcb-proto
+xcb-util-image: xproto libxcb xcb-proto
+xcb-util-keysyms: xproto libxcb xcb-proto
 
 #
 # Toolchain rules: Used to build the and stage the gnu toolchain

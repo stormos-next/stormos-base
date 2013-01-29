@@ -32,30 +32,9 @@ PATCHSTRIP = 0
 AUTOCONF_OPTS = \
 	--prefix=/usr/X11R6
 
-# Convince xcb-util-keysyms that xproto and xcb are installed
-XPROTO_CFLAGS = \
-	-I/usr/X11R6/include
-
-XPROTO_LDFLAGS = \
-	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib
-
-XCB_CFLAGS = \
-	-I$(DESTDIR)/usr/X11R6/include \
-
-XCB_LDFLAGS = \
-	-L$(DESTDIR)/usr/X11R6/lib \
-	-R/usr/X11R6/lib
-
-PKG_CONFIG_PATH = \
-	$(DESTDIR)/usr/X11R6/lib/pkgconfig
-
+# Use xproto and libxcb from protodir
 AUTOCONF_ENV += \
-	XPROTO_CFLAGS="$(XPROTO_CFLAGS)" \
-	XPROTO_LIBS="$(XPROTO_LDFLAGS)" \
-	XCB_CFLAGS="$(XPROTO_CFLAGS) $(XCB_CFLAGS)" \
-	XCB_LIBS="$(XPROTO_LDFLAGS) $(XCB_LDFLAGS)" \
-	PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
+	PKG_CONFIG_PATH="$(DESTDIR)/usr/X11R6/lib/pkgconfig"
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

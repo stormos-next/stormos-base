@@ -32,38 +32,9 @@ PATCHSTRIP = 0
 AUTOCONF_OPTS = \
 	--prefix=/usr/X11R6
 
-# Use libXcb from proto area
+# Use xproto and libxcb from proto area
 AUTOCONF_ENV += \
 	PKG_CONFIG_PATH="$(DESTDIR)/usr/X11R6/lib/pkgconfig"
-
-# Convince xcb-util that we have xproto and xcb installed
-XCB_CFLAGS = \
-	-I$(DESTDIR)/usr/X11R6/include
-
-XCB_LDFLAGS = \
-	-L$(DESTDIR)/usr/X11R6/lib \
-	-R/usr/X11R6/lib \
-	-lxcb \
-	-lxcb-shm \
-	-lxcb-util \
-	-lXau
-
-XPROTO_CFLAGS = \
-	-I/usr/X11R6/include
-
-XPROTO_LDFLAGS = \
-	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib \
-
-AUTOCONF_ENV += \
-	XCB_CFLAGS="$(XCB_CFLAGS) $(XPROTO_CFLAGS)" \
-	XCB_LIBS="$(XCB_LDFLAGS) $(XPROTO_LDFLAGS)" \
-	XCB_SHM_CFLAGS="$(XCB_CFLAGS) $(XPROTO_CFLAGS)" \
-	XCB_SHM_LIBS="$(XCB_LDFLAGS) $(XPROTO_LDFLAGS)" \
-	XCB_UTIL_CFLAGS="$(XCB_CFLAGS) $(XPROTO_CFLAGS)" \
-	XCB_UTIL_LIBS="$(XCB_LDFLAGS) $(XPROGO_LDFLAGS)" \
-	XPROTO_CFLAGS="$(XPROTO_CFLAGS)" \
-	XPROTO_LIBS="$(XPROTO_LDFLAGS)"
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

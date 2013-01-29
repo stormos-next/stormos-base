@@ -29,17 +29,9 @@ include ../Makefile.defs
 AUTOCONF_OPTS = \
 	--prefix=/usr/X11R6
 
-# Convince libXau we have xproto installed
-XAU_CFLAGS = \
-	-I/usr/X11R6/include
-
-XAU_LDFLAGS = \
-	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib
-
+# Use xproto from protodir
 AUTOCONF_ENV += \
-	XAU_CFLAGS="$(XAU_CFLAGS)" \
-	XAU_LIBS="$(XAU_LDFLAGS)"
+	PKG_CONFIG_PATH=$(DESTDIR)/usr/X11R6/lib/pkgconfig
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf
