@@ -128,7 +128,7 @@ GITDESCRIBE = \
 TARBALL =	$(NAME)-$(BRANCH)-$(TIMESTAMP)-$(GITDESCRIBE).tgz
 
 # Get this in before make starts processing targets
-.DEFAULT_GOAL = build 
+.DEFAULT_GOAL = all 
 
 curl: libz openssl1x libidn
 gzip: libz
@@ -175,14 +175,14 @@ xcb-util: libxcb xcb-proto
 # in the proto area.  It will be used instead of the host tools.
 #
 
-# build-(subdirname): build and install into protodir
-$(TOOLCHAIN_SUBDIRS:%=build-%): FRC
-	(cd $(patsubst build-%,%,$@) && \
+# (subdirname): build and install into protodir 
+$(TOOLCHAIN_SUBDIRS): FRC
+	(cd $@ && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
 # install-(subdirname): install onto host
-$(TOOLCHAIN_SUBDIRS:%=install-%): FRC
+$(TOOLCHAIN_SUBDIRS:%=install-%): % 
 	(cd $(patsubst install-%,%,$@) && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=/ install)
@@ -193,7 +193,7 @@ $(TOOLCHAIN_SUBDIRS:%=clean-%): FRC
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) clean)
 
-build-toolchain: $(TOOLCHAIN_SUBDIRS:%=build-%)
+toolchain: $(TOOLCHAIN_SUBDIRS)
 install-toolchain: $(TOOLCHAIN_SUBDIRS:%=install-%)
 clean-toolchain: $(TOOLCHAIN_SUBDIRS:%=clean-%)
 
@@ -202,14 +202,14 @@ clean-toolchain: $(TOOLCHAIN_SUBDIRS:%=clean-%)
 # in the proto area.  It's headers and libraries will be used.
 #
 
-# build-(subdirname): build and install into protodir
-$(DESKTOP_SUBDIRS:%=build-%): FRC
-	(cd $(patsubst build-%,%,$@) && \
+# (subdirname): build and install into proto dir
+$(DESKTOP_SUBDIRS): FRC
+	(cd $@ && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
 # install-(subdirname): install onto host
-$(DESKTOP_SUBDIRS:%=install-%): FRC
+$(DESKTOP_SUBDIRS:%=install-%): %
 	(cd $(patsubst install-%,%,$@) && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=/ install)
@@ -220,7 +220,7 @@ $(DESKTOP_SUBDIRS:%=clean-%): FRC
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) clean)
 
-build-desktop: $(DESKTOP_SUBDIRS:%=build-%)
+desktop: $(DESKTOP_SUBDIRS)
 install-desktop: $(DESKTOP_SUBDIRS:%=install-%)
 clean-toolchain: $(DESKTOP_SUBDIRS:%=clean-%)
 
@@ -229,23 +229,25 @@ clean-toolchain: $(DESKTOP_SUBDIRS:%=clean-%)
 # TODO: Finalize this!
 #
 
-# build-(subdirname)
-$(BASE_SUBDIRS:%=build-%): FRC
-	(cd $(patsubst build-%,%,$@) && \
-	    STRAP=$(STRAP) \
+# (subdirname): build and install into proto dir 
+$(BASE_SUBDIRS): FRC
+	(cd $@ && \
+	    SRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
-$(BASE_SUBDIRS:%=install-%): FRC
+# install-(subdirname): install onto host
+$(BASE_SUBDIRS:%=install-%): %
 	(cd $(patsubst install-%,%,$@) && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=/ install)
 
+# clean-(subdirname): sanitize build directory
 $(BASE_SUBDIRS:%=clean-%): FRC
 	(cd $(patsubst clean-%,%,$@) && \
 	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) clean)
 
-build-base: $(BASE_SUBDIRS:%=build-%)
+base: $(BASE_SUBDIRS)
 install-base: $(BASE_SUBDIRS:%=install-%)
 clean-base: $(BASE_SUBDIRS:%=clean-%)
 
@@ -253,9 +255,11 @@ clean-base: $(BASE_SUBDIRS:%=clean-%)
 # Default rules.  Build/Clean/Install everything.
 #
 
-build: $(TOOLCHAIN_SUBDIRS:%=build-%) $(BASE_SUBDIRS:%=build-%) $(DESKTOP_SUBDIRS:%=build-%)
+all: $(TOOLCHAIN_SUBDIRS) $(BASE_SUBDIRS) $(DESKTOP_SUBDIRS)
 install: $(TOOLCHAIN_SUBDIRS:%=install-%) $(BASE_SUBDIRS:%=build-%) $(DESKTOP_SUBDIRS:%=build-%)
 clean: $(TOOLCHAIN_SUBDIRS:%=clean-%) $(BASE_SUBDIRS:%=clean-%) $(DESKTOP_SUBDIRS:%=clean-%)
+	# Call me paranoid
+	[ "$(DESTDIR)" = "/" ] || rm -rf $(DESTDIR)	
 
 # Extra joyent stuff
 manifest:
