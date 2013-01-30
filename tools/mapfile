@@ -28,13 +28,16 @@ SYMBOL_SCOPE {
 		creat;
 		open;
 		fopen;
+		stat;
 $if _ELF32
 		creat64;
 		open64;
 		fopen64;
+		stat64;
 $endif
 		execve;
 		rename;
+		chdir;
 local:
 		*;
 };

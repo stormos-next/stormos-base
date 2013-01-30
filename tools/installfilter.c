@@ -26,15 +26,56 @@
 #include <errno.h>
 #include <dlfcn.h>
 #include <string.h>
+#include <limits.h>
+#include <sys/stat.h>
 
 /*
  * We can't include fcntl.h because the function definitions will clash,
  * so instead define any important mode flags here:
  */ 
 #define O_CREAT 0x100
-#define O_TRUNC 0x200
 
 #define O_WRONLY 1
+
+/*
+ * We hardcode the proto dir for now.  Yes I know, it's horrible.
+ */
+#define PROTO_DIR_PATH		"/root/stormos-base/proto"
+#define PROTO_DIR_LEN		24
+
+#define LIBTOOL_DIR_PATH	"/usr/share/libtool"
+#define LIBTOOL_DIR_LEN		18
+#define ACLOCAL_DIR_PATH	"/usr/share/aclocal"
+#define ACLOCAL_DIR_LEN		18
+#define AUTOCONF_DIR_PATH	"/usr/share/autoconf"
+#define AUTOCONF_DIR_LEN	19
+#define AUTOMAKE_DIR_PATH	"/usr/share/automake"
+#define AUTOMAKE_DIR_LEN	19
+
+/*
+ * FIXME: This will leak memory
+ */
+static const char *__get_redirect(const char *oldpath)
+{
+	char *newpath;
+
+	/*
+	 * Redirect libtool and aclocal paths to proto dir
+	 */	
+	if (strncmp(oldpath, LIBTOOL_DIR_PATH, LIBTOOL_DIR_LEN) == 0 ||
+	    strncmp(oldpath, ACLOCAL_DIR_PATH, ACLOCAL_DIR_LEN) == 0 ||
+	    strncmp(oldpath, AUTOCONF_DIR_PATH, AUTOCONF_DIR_LEN) == 0 ||
+	    strncmp(oldpath, AUTOMAKE_DIR_PATH, AUTOMAKE_DIR_LEN) == 0)
+		asprintf(&newpath, PROTO_DIR_PATH "/%s", oldpath);
+
+	/*
+	 * No redirect
+	 */
+	else
+		newpath = strdup(oldpath);
+
+	return newpath;
+}
 
 static int __is_crap_file(const char *path)
 {
@@ -46,18 +87,15 @@ static int __is_crap_file(const char *path)
 	if (len > 2 && path[len-3] == '.' && path[len-2] == 'l' && path[len-1] == 'a')
 		return 1;
 
-#if 0 // Disable this for now as it can break installs
-	/*
-	 * It's a static library.  Almost as useless to us.
-	 */
-	if (len > 1 && path[len-2] == '.' && path[len-1] == 'a')
-		return 1;
-#endif
-
 	/*
 	 * No idea what the file is.  Assumes all's good.
 	 */
 	return 0;
+}
+
+static int __inside_protodir(const char *path)
+{
+	return (strncmp(path, PROTO_DIR_PATH, PROTO_DIR_LEN) == 0);
 }
 
 int creat(const char *path, mode_t mode)
@@ -65,8 +103,6 @@ int creat(const char *path, mode_t mode)
 	static int (*_creat)(const char *, mode_t) = NULL;
 	static int (*_open)(const char *, int) = NULL;
 	int fd;
-
-	//fprintf(stderr, "Intercepting creat(%s, %d) call\n", path, mode);
 
 	/*
 	 * Load the next symbol which is hopefully in libc.
@@ -77,7 +113,7 @@ int creat(const char *path, mode_t mode)
 	/*
 	 * If asked to create a crap file, return handle to /dev/null
 	 */
-	if (__is_crap_file(path))
+	if (__is_crap_file(path) && __inside_protodir(path))
 	{
 		/*
 		 * Prefer to keep our own handle to the real open function
@@ -88,7 +124,7 @@ int creat(const char *path, mode_t mode)
 		fd = _open("/dev/null", O_WRONLY);
 	}
 	else
-		fd = _creat(path, mode);
+		fd = _creat(__get_redirect(path), mode);
 
 	return fd; 
 }
@@ -109,7 +145,7 @@ int creat64(const char *path, mode_t mode)
 	/*
 	 * If asked to creat a crap file, return handle to /dev/null
 	 */
-	if (__is_crap_file(path))
+	if (__is_crap_file(path) && __inside_protodir(path))
 	{
 		/*
 		 * Prefer to keep our own handle to the real open64 function
@@ -120,7 +156,7 @@ int creat64(const char *path, mode_t mode)
 		fd = _open64("/dev/null", O_WRONLY);
 	}
 	else
-		fd = _creat64(path, mode);
+		fd = _creat64(__get_redirect(path), mode);
 
 	return fd;
 }
@@ -131,7 +167,7 @@ int open(const char *path, int mode)
 	static int (*_open)(const char *, int) = NULL;
 	int fd;
 
-	//fprintf(stderr, "Intercepting open(%s, %d) call\n", path, mode);
+	fprintf(stderr, "About to open %s\n", path);
 
 	/*
 	 * Load the next symbol which is hopefully in libc.
@@ -142,10 +178,10 @@ int open(const char *path, int mode)
 	/*
 	 * If asked to create a crap file, return handle to /dev/null
 	 */	
-	if ((mode & O_CREAT || mode & O_TRUNC) && __is_crap_file(path))
+	if (mode & O_CREAT && __is_crap_file(path) && __inside_protodir(path))
 		fd = _open("/dev/null", mode);
 	else
-		fd = _open(path, mode);
+		fd = _open(__get_redirect(path), mode);
 
 	return fd;
 }
@@ -156,8 +192,6 @@ int open64(const char *path, int mode)
 	static int (*_open64)(const char *, int) = NULL;
 	int fd;
 
-	//fprintf(stderr, "Intercepting open64(%s, %d) call\n", path, mode);
-
 	/*
 	 * Load the next symbol which is hopefully in libc.
 	 */
@@ -167,10 +201,10 @@ int open64(const char *path, int mode)
 	/*
 	 * If asked to create a crap file, return handle to /dev/null
 	 */
-	if ((mode & O_CREAT || mode & O_TRUNC) && __is_crap_file(path))
+	if (mode & O_CREAT && __is_crap_file(path) && __inside_protodir(path))
 		fd = _open64("/dev/null", mode);
 	else
-		fd = _open64(path, mode);
+		fd = _open64(__get_redirect(path), mode);
 
 	return fd;
 }
@@ -181,8 +215,6 @@ FILE *fopen(const char *path, const char *mode)
 	static FILE *(*_fopen)(const char *, const char *) = NULL;
 	FILE *fp;
 
-	//fprintf(stderr, "Intercepting fopen(%s, %s) call\n", path, mode);
-
 	/*
 	 * Load the next symbol which is hopefully in libc.
 	 */
@@ -192,10 +224,10 @@ FILE *fopen(const char *path, const char *mode)
 	/*
 	 * If asked to create a crap file, return handle to /dev/null
 	 */
-	if (mode[0] == 'w' && __is_crap_file(path))
+	if (mode[0] == 'w' && __is_crap_file(path) && __inside_protodir(path))
 		fp = _fopen("/dev/null", mode);
 	else
-		fp = _fopen(path, mode);
+		fp = _fopen(__get_redirect(path), mode);
 
 	return fp;
 }
@@ -206,8 +238,6 @@ FILE *fopen64(const char *path, const char *mode)
         static FILE *(*_fopen64)(const char *, const char *) = NULL;
 	FILE *fp;
 
-	//fprintf(stderr, "Intercepting fopen64(%s, %s) call\n", path, mode);
-
 	/*
 	 * Load the next symbol which is hopefully in libc.
 	 */
@@ -217,10 +247,10 @@ FILE *fopen64(const char *path, const char *mode)
 	/*
 	 * If asked to create a crap file, return handle to /dev/null
 	 */
-	if (mode[0] == 'w' && __is_crap_file(path))
+	if (mode[0] == 'w' && __is_crap_file(path) && __inside_protodir(path))
 		fp = _fopen64("/dev/null", mode);
 	else
-		fp = _fopen64(path, mode);
+		fp = _fopen64(__get_redirect(path), mode);
 
 	return fp;
 }
@@ -231,8 +261,6 @@ int execve(const char *path, const char **argv, const char **envp)
 	int (*_execve)(const char *, const char **, const char **) = NULL;
 	int i, envc;
 	char **new_envp = NULL, **tmp_envp, *preload_32, *preload_64;
-
-	//fprintf(stderr, "Intercepting execve() call\n");
 
 	/*
 	 * Load the next symbol which is hopefully in libc.
@@ -265,13 +293,13 @@ int execve(const char *path, const char **argv, const char **envp)
 			 * Copy existing environment variables over
 			 */
 			for (i = 0; i < envc; i++)
-				new_envp[i] = strdup(envp[i]);
+				new_envp[i] = (char *)envp[i];
 
 			/*
 			 * Append LD_PRELOAD_32
-			 */ 
-			new_envp[envc++] = preload_32;
-			new_envp[envc++] = NULL;
+			 */
+			new_envp[envc++] = preload_32; 
+			new_envp[envc+1] = NULL;
 		}
 		
 		if (preload_64 != NULL)
@@ -291,7 +319,7 @@ int execve(const char *path, const char **argv, const char **envp)
 				 * Copy existing environment variables over
 				 */
 				for (i = 0; i < envc; i++)
-					new_envp[i] = strdup(envp[i]);
+					new_envp[i] = (char *)envp[i];
 			}
 			else
 			{
@@ -300,12 +328,6 @@ int execve(const char *path, const char **argv, const char **envp)
 				 */
 				if ((tmp_envp = (char **)realloc((void *)new_envp, sizeof(char *) * (envc + 2))) == NULL)
 				{
-					/*
-					 * Avoid leaking any mem
-					 */
-					for (i = 0; i < envc; i++)
-						free(new_envp[i]);
-
 					errno = ENOMEM;
 					return -1;
 				}
@@ -319,7 +341,7 @@ int execve(const char *path, const char **argv, const char **envp)
 			new_envp[envc++] = preload_64; 
 			new_envp[envc++] = NULL;
 		}
-		
+
 		/*
 		 * Call execvp with our injected environment variables
 		 */	
@@ -336,8 +358,6 @@ int rename(const char *oldpath, const char *newpath)
 {
 	int (*_rename)(const char *, const char *) = NULL;
 
-	//fprintf(stderr, "Intercepting rename(%s, %s) call\n", oldpath, newpath);
-
 	/*
 	 * Load the next symbol which is hopefully in libc.
 	 */
@@ -347,12 +367,62 @@ int rename(const char *oldpath, const char *newpath)
 	/*
 	 * If asked to rename a file to a crapfile, unlink the original file instead
 	 */
-	if (__is_crap_file(newpath))
+	if (__is_crap_file(newpath) && __inside_protodir(newpath))
 		(void)unlink(oldpath);
 	else
 		return _rename(oldpath, newpath);
 
 	return 0;
+}
+
+int stat(const char *path, struct stat *statptr)
+{
+	int (*_stat)(const char *, struct stat *) = NULL;
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_stat == NULL)
+		_stat = (int (*)(const char *, struct stat *))dlsym(RTLD_NEXT, "stat");
+
+	/*
+	 * Redirect some stat requests to the proto directory
+	 */
+	return _stat(__get_redirect(path), statptr);
+}
+
+#ifndef __amd64__
+int stat64(const char *path, struct stat64 *statptr)
+{
+	int (*_stat64)(const char *, struct stat64 *) = NULL;
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_stat64 == NULL)
+		_stat64 = (int (*)(const char *, struct stat64 *))dlsym(RTLD_NEXT, "stat64");
+
+	/*
+	 * Redirect some stat64 requests to the proto directory
+	 */
+	return _stat64(__get_redirect(path), statptr);
+}
+#endif
+
+int chdir(const char *path)
+{
+	int (*_chdir)(const char *) = NULL;
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_chdir == NULL)
+		_chdir = (int (*)(const char *))dlsym(RTLD_NEXT, "chdir");
+
+	/*
+	 * Redirect some chdir requests to the proto directory
+	 */
+	return _chdir(__get_redirect(path));
 }
 
 int main(int argc, const char argv)

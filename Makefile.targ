@@ -25,10 +25,14 @@
 all_autoconf: $(BUILD32:yes=all_autoconf_32) $(BUILD64:yes=all_autoconf_64)
 
 all_autoconf_32: $(AUTOCONF_OUT.32)
-	(cd $(VER.32); env - PATH=$(PATH) $(MAKE) $(PARALLEL) $(OVERRIDES))
+	(cd $(VER.32); \
+	    env - PATH=$(PATH) \
+	    ../../tools/installfilter $(MAKE) $(PARALLEL) $(OVERRIDES))
 
 all_autoconf_64: $(AUTOCONF_OUT.64)
-	(cd $(VER.64); env - PATH=$(PATH) $(MAKE) $(PARALLEL) $(OVERRIDES.64))
+	(cd $(VER.64); \
+	    env - PATH=$(PATH) \
+	    ../../tools/installfilter $(MAKE) $(PARALLEL) $(OVERRIDES.64))
 
 install_autoconf: $(BUILD32:yes=install_autoconf_32) \
     $(BUILD64:yes=install_autoconf_64)
