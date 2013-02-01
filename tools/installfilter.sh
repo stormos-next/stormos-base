@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ksh
 #
 # CDDL HEADER START
 #
@@ -33,12 +33,12 @@ case "$DIRNAME" in
 	;;
 esac
 
-# Disable direct binding of symbols
-#export LD_NODIRECT=yes
-
-# Load our installfilter libraries
-export LD_PRELOAD_32=$DIRNAME/installfilter-32.so
-export LD_PRELOAD_64=$DIRNAME/installfilter-64.so
-
-# Run whatever command we're given
-exec $@
+# Load our installfilter libraries and re-exec
+if [ -z "$LD_PRELOAD_32" -o -z "$LD_PRELOAD_64" ]; then
+	export LD_PRELOAD_32=$DIRNAME/installfilter-32.so
+	export LD_PRELOAD_64=$DIRNAME/installfilter-64.so
+	exec bash $0 $@
+else
+	# Run whatever command we're given
+	exec $@
+fi

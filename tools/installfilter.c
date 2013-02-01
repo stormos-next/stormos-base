@@ -303,6 +303,8 @@ DIR *opendir(const char *path)
 	return _opendir(__get_redirect(path));	
 }
 
+#define LIBTOOL_BIN_PATH	"/usr/bin/libtool"
+#define LIBTOOL_BIN_LEN		16
 #define AUTOM4TE_BIN_PATH	"/usr/bin/autom4te"
 #define AUTOM4TE_BIN_LEN	17
 #define ACLOCAL_BIN_PATH	"/usr/bin/aclocal"
@@ -315,7 +317,8 @@ DIR *opendir(const char *path)
 int execve(const char *old_path, const char **argv, const char **envp)
 {
 	static int (*_execve)(const char *, const char **, const char **) = NULL;
-	char *new_path;
+	char *new_path; char **new_argv;
+	int i;
 
 	/*
 	 * Load the next symbol which is hopefully in libc.
@@ -329,7 +332,10 @@ int execve(const char *old_path, const char **argv, const char **envp)
 	 * Note: this also truncates the version numbers and forces
 	 *       everything to run in the default version.
 	 */
-	if (strncmp(old_path, AUTOM4TE_BIN_PATH, AUTOM4TE_BIN_LEN) == 0 ||
+	if (strncmp(old_path, LIBTOOL_BIN_PATH, LIBTOOL_BIN_LEN) == 0 ||
+	    strncmp(old_path, LIBTOOL_BIN_PATH + 8, LIBTOOL_BIN_LEN - 8) == 0)
+		new_path = strdup(PROTO_DIR_PATH LIBTOOL_BIN_PATH);
+	else if (strncmp(old_path, AUTOM4TE_BIN_PATH, AUTOM4TE_BIN_LEN) == 0 ||
 	    strncmp(old_path, AUTOM4TE_BIN_PATH + 8, AUTOM4TE_BIN_LEN - 8) == 0)
 		new_path = strdup(PROTO_DIR_PATH AUTOM4TE_BIN_PATH);
 	else if (strncmp(old_path, ACLOCAL_BIN_PATH, ACLOCAL_BIN_LEN) == 0 ||
@@ -343,8 +349,23 @@ int execve(const char *old_path, const char **argv, const char **envp)
 		new_path = strdup(PROTO_DIR_PATH AUTOMAKE_BIN_PATH);
 	else
 		new_path = strdup(old_path);
- 
-	return _execve((const char *)new_path, argv, envp);
+
+	/*
+	 * Also need to fix up ARGV0 for interpreted scripts
+	 */
+	if (new_path == NULL || (new_argv = malloc(sizeof(argv))) == NULL)	
+	{
+		errno = ENOMEM;
+		return -1;
+	}
+
+	for (i = 0; argv[i]; i++)
+		if (i == 0)
+			new_argv[i] = new_path;
+		else
+			new_argv[i] = strdup(argv[i]); 
+
+	return _execve((const char *)new_path, (const char **)new_argv, envp);
 }
 
 int rename(const char *oldpath, const char *newpath)
