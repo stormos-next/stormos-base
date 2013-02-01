@@ -23,19 +23,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <errno.h>
 #include <dlfcn.h>
 #include <string.h>
-#include <limits.h>
+#include <dirent.h>
 #include <sys/stat.h>
-
-/*
- * We can't include fcntl.h because the function definitions will clash,
- * so instead define any important mode flags here:
- */ 
-#define O_CREAT 0x100
-
-#define O_WRONLY 1
+#include <sys/fcntl.h>
 
 /*
  * We hardcode the proto dir for now.  Yes I know, it's horrible.
@@ -66,7 +60,7 @@ static const char *__get_redirect(const char *oldpath)
 	    strncmp(oldpath, ACLOCAL_DIR_PATH, ACLOCAL_DIR_LEN) == 0 ||
 	    strncmp(oldpath, AUTOCONF_DIR_PATH, AUTOCONF_DIR_LEN) == 0 ||
 	    strncmp(oldpath, AUTOMAKE_DIR_PATH, AUTOMAKE_DIR_LEN) == 0)
-		asprintf(&newpath, PROTO_DIR_PATH "/%s", oldpath);
+		asprintf(&newpath, PROTO_DIR_PATH "%s", oldpath);
 
 	/*
 	 * No redirect
@@ -95,6 +89,9 @@ static int __is_crap_file(const char *path)
 
 static int __inside_protodir(const char *path)
 {
+	/*
+	 * Check if given path resides in proto dir
+	 */
 	return (strncmp(path, PROTO_DIR_PATH, PROTO_DIR_LEN) == 0);
 }
 
@@ -129,7 +126,7 @@ int creat(const char *path, mode_t mode)
 	return fd; 
 }
 
-#ifndef __amd64__
+#ifndef _LP64
 int creat64(const char *path, mode_t mode)
 {
 	static int (*_creat64)(const char *, mode_t) = NULL;
@@ -162,49 +159,83 @@ int creat64(const char *path, mode_t mode)
 }
 #endif
 
-int open(const char *path, int mode)
+int open(const char *path, int flag, ...)
 {
-	static int (*_open)(const char *, int) = NULL;
+	static int (*_open)(const char *, int, ...) = NULL;
 	int fd;
-
-	fprintf(stderr, "About to open %s\n", path);
 
 	/*
 	 * Load the next symbol which is hopefully in libc.
 	 */
 	if (_open == NULL)
-		_open = (int (*)(const char *, int))dlsym(RTLD_NEXT, "open");
+		_open = (int (*)(const char *, int, ...))dlsym(RTLD_NEXT, "open");
 
 	/*
 	 * If asked to create a crap file, return handle to /dev/null
-	 */	
-	if (mode & O_CREAT && __is_crap_file(path) && __inside_protodir(path))
-		fd = _open("/dev/null", mode);
+	 */
+	if (flag & O_CREAT)
+	{
+		if (__is_crap_file(path) && __inside_protodir(path))
+			fd = _open("/dev/null", flag ^ O_CREAT);
+		else
+		{
+			mode_t mode;
+			va_list args;
+
+			/*
+			 * The posix specification says that the mode
+			 * argument _must_ be given with O_CREAT
+			 */
+			va_start(args, flag);
+			mode = va_arg(args, mode_t);
+			va_end(args);
+
+			fd = _open(__get_redirect(path), flag, mode);
+		}
+	}
 	else
-		fd = _open(__get_redirect(path), mode);
+		fd = _open(__get_redirect(path), flag);
 
 	return fd;
 }
 
-#ifndef __amd64__
-int open64(const char *path, int mode)
+#ifndef _LP64
+int open64(const char *path, int flag, ...)
 {
-	static int (*_open64)(const char *, int) = NULL;
+	static int (*_open64)(const char *, int, ...) = NULL;
 	int fd;
 
 	/*
 	 * Load the next symbol which is hopefully in libc.
 	 */
 	if (_open64 == NULL)
-		_open64 = (int (*)(const char *, int))dlsym(RTLD_NEXT, "open64");
+		_open64 = (int (*)(const char *, int, ...))dlsym(RTLD_NEXT, "open64");
 
 	/*
 	 * If asked to create a crap file, return handle to /dev/null
 	 */
-	if (mode & O_CREAT && __is_crap_file(path) && __inside_protodir(path))
-		fd = _open64("/dev/null", mode);
+	if (flag & O_CREAT)
+	{
+		if (__is_crap_file(path) && __inside_protodir(path))
+			fd = _open64("/dev/null", flag ^ O_CREAT);
+		else
+		{
+			mode_t mode;	
+			va_list args;
+
+			/*
+			 * The posix specification says that the mode
+			 * argument _must_ be given with O_CREAT
+			 */
+			va_start(args, flag);
+			mode = va_arg(args, mode_t);
+			va_end(args);
+
+			fd = _open64(__get_redirect(path), flag, mode);
+		}
+	}
 	else
-		fd = _open64(__get_redirect(path), mode);
+		fd = _open64(__get_redirect(path), flag);
 
 	return fd;
 }
@@ -232,7 +263,7 @@ FILE *fopen(const char *path, const char *mode)
 	return fp;
 }
 
-#ifndef __amd64__
+#ifndef _LP64
 FILE *fopen64(const char *path, const char *mode)
 {
         static FILE *(*_fopen64)(const char *, const char *) = NULL;
@@ -256,11 +287,35 @@ FILE *fopen64(const char *path, const char *mode)
 }
 #endif
 
-int execve(const char *path, const char **argv, const char **envp)
+DIR *opendir(const char *path)
 {
-	int (*_execve)(const char *, const char **, const char **) = NULL;
-	int i, envc;
-	char **new_envp = NULL, **tmp_envp, *preload_32, *preload_64;
+	static DIR *(*_opendir)(const char *) = NULL;
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_opendir == NULL)
+		_opendir = (DIR *(*)(const char *))dlsym(RTLD_NEXT, "opendir");
+
+	/*
+	 * Redirect some requests to the proto dir
+	 */
+	return _opendir(__get_redirect(path));	
+}
+
+#define AUTOM4TE_BIN_PATH	"/usr/bin/autom4te"
+#define AUTOM4TE_BIN_LEN	17
+#define ACLOCAL_BIN_PATH	"/usr/bin/aclocal"
+#define ACLOCAL_BIN_LEN		16
+#define AUTOCONF_BIN_PATH	"/usr/bin/autoconf"
+#define AUTOCONF_BIN_LEN	17
+#define AUTOMAKE_BIN_PATH	"/usr/bin/automake"
+#define AUTOMAKE_BIN_LEN	17
+
+int execve(const char *old_path, const char **argv, const char **envp)
+{
+	static int (*_execve)(const char *, const char **, const char **) = NULL;
+	char *new_path;
 
 	/*
 	 * Load the next symbol which is hopefully in libc.
@@ -269,94 +324,32 @@ int execve(const char *path, const char **argv, const char **envp)
 		_execve = (int (*)(const char *, const char **, const char **))dlsym(RTLD_NEXT, "execve");
 
 	/*
-	 * Copy LD_PRELOAD_32 and LD_PRELOAD_64 into envp.
+	 * Redirect some requests to the proto dir
+	 *
+	 * Note: this also truncates the version numbers and forces
+	 *       everything to run in the default version.
 	 */
-	if ((preload_32 = getenv("LD_PRELOAD_32")) != NULL || (preload_64 = getenv("LD_PRELOAD_64")) != NULL)
-	{
-		/*
-		 * Get number of existing environment variables
-		 */
-		for (envc = 0; envp[envc] != NULL; envc++);
-		
-		if (preload_32 != NULL)
-		{
-			/*
-			 * Bail if there's not enough memory to fudge envp
-			 */
-			if ((new_envp = (char **)malloc(sizeof(char *) * (envc + 2))) == NULL)
-			{
-				errno = ENOMEM;
-				return -1;
-			}
-
-			/*
-			 * Copy existing environment variables over
-			 */
-			for (i = 0; i < envc; i++)
-				new_envp[i] = (char *)envp[i];
-
-			/*
-			 * Append LD_PRELOAD_32
-			 */
-			new_envp[envc++] = preload_32; 
-			new_envp[envc+1] = NULL;
-		}
-		
-		if (preload_64 != NULL)
-		{
-			if (new_envp == NULL)
-			{
-				/*
-				 * Bail if there's not enough memory to fudge envp
-				 */
-				if ((new_envp = (char **)malloc(sizeof(char *) * (envc + 2))) == NULL)
-				{
-					errno = ENOMEM;
-					return -1;
-				}
-
-				/*
-				 * Copy existing environment variables over
-				 */
-				for (i = 0; i < envc; i++)
-					new_envp[i] = (char *)envp[i];
-			}
-			else
-			{
-				/* 
-				 * Bail if there's not enough memory to fudge envp
-				 */
-				if ((tmp_envp = (char **)realloc((void *)new_envp, sizeof(char *) * (envc + 2))) == NULL)
-				{
-					errno = ENOMEM;
-					return -1;
-				}
-				else
-					new_envp = tmp_envp;
-			}	 
-			
-			/*
-			 * Append LD_PRELOAD_64
-			 */
-			new_envp[envc++] = preload_64; 
-			new_envp[envc++] = NULL;
-		}
-
-		/*
-		 * Call execvp with our injected environment variables
-		 */	
-		return _execve(path, argv, (const char **)new_envp);
-	}
-
-	/*
-	 * Couldn't find LD_PRELOAD_* variables to copy over
-	 */
-	return _execve(path, argv, envp);
+	if (strncmp(old_path, AUTOM4TE_BIN_PATH, AUTOM4TE_BIN_LEN) == 0 ||
+	    strncmp(old_path, AUTOM4TE_BIN_PATH + 8, AUTOM4TE_BIN_LEN - 8) == 0)
+		new_path = strdup(PROTO_DIR_PATH AUTOM4TE_BIN_PATH);
+	else if (strncmp(old_path, ACLOCAL_BIN_PATH, ACLOCAL_BIN_LEN) == 0 ||
+	    strncmp(old_path, ACLOCAL_BIN_PATH + 8, ACLOCAL_BIN_LEN - 8) == 0)
+		new_path = strdup(PROTO_DIR_PATH ACLOCAL_BIN_PATH);
+	else if (strncmp(old_path, AUTOCONF_BIN_PATH, AUTOCONF_BIN_LEN) == 0 ||
+	    strncmp(old_path, AUTOCONF_BIN_PATH + 8, AUTOCONF_BIN_LEN - 8) == 0)
+		new_path = strdup(PROTO_DIR_PATH AUTOCONF_BIN_PATH);
+	else if (strncmp(old_path, AUTOMAKE_BIN_PATH, AUTOMAKE_BIN_LEN) == 0 ||
+	    strncmp(old_path, AUTOMAKE_BIN_PATH + 8, AUTOMAKE_BIN_LEN - 8) == 0)
+		new_path = strdup(PROTO_DIR_PATH AUTOMAKE_BIN_PATH);
+	else
+		new_path = strdup(old_path);
+ 
+	return _execve((const char *)new_path, argv, envp);
 }
 
 int rename(const char *oldpath, const char *newpath)
 {
-	int (*_rename)(const char *, const char *) = NULL;
+	static int (*_rename)(const char *, const char *) = NULL;
 
 	/*
 	 * Load the next symbol which is hopefully in libc.
@@ -377,7 +370,7 @@ int rename(const char *oldpath, const char *newpath)
 
 int stat(const char *path, struct stat *statptr)
 {
-	int (*_stat)(const char *, struct stat *) = NULL;
+	static int (*_stat)(const char *, struct stat *) = NULL;
 
 	/*
 	 * Load the next symbol which is hopefully in libc.
@@ -391,10 +384,10 @@ int stat(const char *path, struct stat *statptr)
 	return _stat(__get_redirect(path), statptr);
 }
 
-#ifndef __amd64__
+#ifndef _LP64
 int stat64(const char *path, struct stat64 *statptr)
 {
-	int (*_stat64)(const char *, struct stat64 *) = NULL;
+	static int (*_stat64)(const char *, struct stat64 *) = NULL;
 
 	/*
 	 * Load the next symbol which is hopefully in libc.
@@ -409,9 +402,43 @@ int stat64(const char *path, struct stat64 *statptr)
 }
 #endif
 
+int lstat(const char *path, struct stat *statptr)
+{
+	static int (*_lstat)(const char *, struct stat *) = NULL;
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_lstat == NULL)
+		_lstat = (int (*)(const char *, struct stat *))dlsym(RTLD_NEXT, "lstat");
+
+	/*
+	 * Redirect some lstat requests to the proto directory
+	 */
+	return _lstat(__get_redirect(path), statptr);
+}
+
+#ifndef _LP64
+int lstat64(const char *path, struct stat64 *statptr)
+{
+	static int (*_lstat64)(const char *, struct stat64 *) = NULL;
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_lstat64 == NULL)
+		_lstat64 = (int (*)(const char *, struct stat64 *))dlsym(RTLD_NEXT, "lstat64");
+
+	/*
+	 * Redirect some lstat64 requests to the proto directory
+	 */
+	return _lstat64(__get_redirect(path), statptr);
+}
+#endif
+
 int chdir(const char *path)
 {
-	int (*_chdir)(const char *) = NULL;
+	static int (*_chdir)(const char *) = NULL;
 
 	/*
 	 * Load the next symbol which is hopefully in libc.

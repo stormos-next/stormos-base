@@ -21,7 +21,7 @@
 # Copyright (c) 2013 Andrew Stormont.
 #
 
-LDFLAGS = -shared -fPIC -Wl,-M,mapfile -Wl,-z,text -ldl 
+LDFLAGS = -shared -fPIC -Wl,-M,mapfile -Wl,-z,text -Wl,-z,interpose -ldl 
 
 all: installfilter 
 

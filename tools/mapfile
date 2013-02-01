@@ -29,12 +29,15 @@ SYMBOL_SCOPE {
 		open;
 		fopen;
 		stat;
+		lstat;
 $if _ELF32
 		creat64;
 		open64;
 		fopen64;
 		stat64;
+		lstat64;
 $endif
+		opendir;
 		execve;
 		rename;
 		chdir;
