@@ -314,7 +314,7 @@ DIR *opendir(const char *path)
 #define AUTOMAKE_BIN_PATH	"/usr/bin/automake"
 #define AUTOMAKE_BIN_LEN	17
 
-int execve(const char *old_path, const char **argv, const char **envp)
+int execve(const char *old_path, const char **old_argv, const char **envp)
 {
 	static int (*_execve)(const char *, const char **, const char **) = NULL;
 	char *new_path; char **new_argv;
@@ -353,17 +353,20 @@ int execve(const char *old_path, const char **argv, const char **envp)
 	/*
 	 * Also need to fix up ARGV0 for interpreted scripts
 	 */
-	if (new_path == NULL || (new_argv = malloc(sizeof(argv))) == NULL)	
+	for (i = 0; old_argv[i] != NULL; i++)
+
+	if (new_path == NULL || (new_argv = malloc(sizeof(char *) * (i + 1))) == NULL)	
 	{
 		errno = ENOMEM;
 		return -1;
 	}
 
-	for (i = 0; argv[i]; i++)
+	for (i = 0; old_argv[i] != NULL; i++)
 		if (i == 0)
-			new_argv[i] = new_path;
+			new_argv[i] = strdup(new_path);
 		else
-			new_argv[i] = strdup(argv[i]); 
+			new_argv[i] = strdup(old_argv[i]);
+	new_argv[i++] = NULL;
 
 	return _execve((const char *)new_path, (const char **)new_argv, envp);
 }
