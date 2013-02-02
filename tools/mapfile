@@ -42,6 +42,7 @@ $endif
 		rename;
 		symlink;
 		getenv;
+		clearenv;
 		chdir;
 local:
 		*;

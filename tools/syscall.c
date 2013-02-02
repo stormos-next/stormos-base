@@ -90,22 +90,22 @@ static char *__get_redirect(const char *old_path)
 	 * Redirect libtool and fiends executables to proto dir
 	 */
         else if (strncmp(old_path, LIBTOOL_BIN_PATH, LIBTOOL_BIN_LEN) == 0 ||
-            strncmp(old_path, LIBTOOL_BIN_PATH + 8, LIBTOOL_BIN_LEN - 9) == 0)
+            strncmp(old_path, LIBTOOL_BIN_PATH + 9, LIBTOOL_BIN_LEN - 9) == 0)
                 new_path = strdup(PROTO_DIR_PATH LIBTOOL_BIN_PATH);
         else if (strncmp(old_path, AUTOM4TE_BIN_PATH, AUTOM4TE_BIN_LEN) == 0 ||
-            strncmp(old_path, AUTOM4TE_BIN_PATH + 8, AUTOM4TE_BIN_LEN - 9) == 0)
+            strncmp(old_path, AUTOM4TE_BIN_PATH + 9, AUTOM4TE_BIN_LEN - 9) == 0)
                 new_path = strdup(PROTO_DIR_PATH AUTOM4TE_BIN_PATH);
         else if (strncmp(old_path, ACLOCAL_BIN_PATH, ACLOCAL_BIN_LEN) == 0 ||
-            strncmp(old_path, ACLOCAL_BIN_PATH + 8, ACLOCAL_BIN_LEN - 9) == 0)
+            strncmp(old_path, ACLOCAL_BIN_PATH + 9, ACLOCAL_BIN_LEN - 9) == 0)
                 new_path = strdup(PROTO_DIR_PATH ACLOCAL_BIN_PATH);
         else if (strncmp(old_path, AUTOCONF_BIN_PATH, AUTOCONF_BIN_LEN) == 0 ||
-            strncmp(old_path, AUTOCONF_BIN_PATH + 8, AUTOCONF_BIN_LEN - 9) == 0)
+            strncmp(old_path, AUTOCONF_BIN_PATH + 9, AUTOCONF_BIN_LEN - 9) == 0)
                 new_path = strdup(PROTO_DIR_PATH AUTOCONF_BIN_PATH);
         else if (strncmp(old_path, AUTOMAKE_BIN_PATH, AUTOMAKE_BIN_LEN) == 0 ||
-            strncmp(old_path, AUTOMAKE_BIN_PATH + 8, AUTOMAKE_BIN_LEN - 9) == 0)
+            strncmp(old_path, AUTOMAKE_BIN_PATH + 9, AUTOMAKE_BIN_LEN - 9) == 0)
                 new_path = strdup(PROTO_DIR_PATH AUTOMAKE_BIN_PATH);
 	else if (strncmp(old_path, AUTORECONF_BIN_PATH, AUTORECONF_BIN_LEN) == 0 ||
-	    strncmp(old_path, AUTORECONF_BIN_PATH + 8, AUTORECONF_BIN_LEN - 9) == 0)
+	    strncmp(old_path, AUTORECONF_BIN_PATH + 9, AUTORECONF_BIN_LEN - 9) == 0)
 		new_path = strdup(PROTO_DIR_PATH AUTORECONF_BIN_PATH);
 
 	/*
@@ -376,7 +376,7 @@ int execve(const char *old_path, const char **old_argv, const char **envp)
 	 */
 	for (i = 0; old_argv[i] != NULL; i++)
 
-	if (new_path == NULL || (new_argv = malloc(sizeof(char *) * i++)) == NULL)	
+	if (new_path == NULL || (new_argv = malloc(sizeof(char *) * (i + 1))) == NULL)	
 	{
 		errno = ENOMEM;
 		return -1;
@@ -390,7 +390,7 @@ int execve(const char *old_path, const char **old_argv, const char **envp)
 			new_argv[i] = strreplace("=" AUTOCONF_DIR_PATH, "=" PROTO_DIR_PATH AUTOCONF_DIR_PATH, old_argv[i]);
 		else
 			new_argv[i] = __get_redirect(old_argv[i]);
-	new_argv[i++] = NULL;
+	new_argv[i] = NULL;
 
 #ifdef DEBUG_EXECVE
 	fprintf(stderr, "Dumping conents of old_argv:\n");
@@ -537,6 +537,32 @@ char *getenv(const char *name)
 	 * Redirect some getenv results to the protodir
 	 */
 	return __get_redirect(value);
+}
+
+int clearenv(void)
+{
+	extern char **environ;
+	char **new_environ;
+
+	/*
+	 * Bail if there's not enough memory to fudge environ
+	 */
+	if ((new_environ = (char **)malloc(sizeof(char *) * 3)) == NULL)
+		return -1;
+
+	/*
+	 * Inject LD_PRELOAD variables
+	 */
+	asprintf(&new_environ[0], "LD_PRELOAD_32=%s", getenv("LD_PRELOAD_32"));
+	asprintf(&new_environ[1], "LD_PRELOAD_64=%s", getenv("LD_PRELOAD_64"));
+
+	/*
+	 * Apply changes.
+	 */
+	new_environ[2] = NULL;
+	environ = new_environ;
+
+	return 0;
 }
 
 int chdir(const char *path)
