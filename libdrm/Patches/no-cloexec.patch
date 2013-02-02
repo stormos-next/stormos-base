@@ -1,0 +1,14 @@
+--- libdrm-2.4.41-32/include/drm/drm.h.bak	Tue Jan 29 15:06:57 2013
++++ libdrm-2.4.41-32/include/drm/drm.h	Tue Jan 29 15:07:25 2013
+@@ -618,7 +618,11 @@
+ 	__u64 value;
+ };
+ 
++#ifdef O_CLOEXEC
+ #define DRM_CLOEXEC O_CLOEXEC
++#else
++#define DRM_CLOEXEC 0
++#endif
+ struct drm_prime_handle {
+ 	__u32 handle;
+ 

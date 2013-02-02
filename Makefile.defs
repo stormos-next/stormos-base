@@ -37,7 +37,7 @@ GXX =		$(DESTDIR)/usr/bin/g++
 GCC.64 =	$(GCC) -m64
 GXX.64 =	$(GXX) -m64
 
-BUILDENV =	$(BASE)/../tools/buildenv
+BUILD_ENV =	$(BASE)/../tools/buildenv
 
 SYSINCDIRS =	/usr/include
 SYSLIBDIRS =	/usr/lib /lib

@@ -1,0 +1,22 @@
+--- libdrm-2.4.41-32/xf86drm.h.bak	Tue Jan 29 15:10:00 2013
++++ libdrm-2.4.41-32/xf86drm.h	Tue Jan 29 15:13:29 2013
+@@ -56,6 +56,19 @@
+ #define DRM_IOC_READWRITE	_IOC_READ|_IOC_WRITE
+ #define DRM_IOC(dir, group, nr, size) _IOC(dir, group, nr, size)
+ 
++#elif defined(__sun)
++
++#include <sys/ioccom.h>
++#define DRM_IOCTL_NR(n)		((n) & 0xff)
++#define DRM_IOC_VOID		IOC_VOID
++#define DRM_IOC_READ		IOC_OUT
++#define DRM_IOC_WRITE		IOC_IN
++#define DRM_IOC_READWRITE	IOC_INOUT
++#define DRM_IOC(dir, group, nr, size) \
++	(dir == DRM_IOC_READWRITE ? _IOWRN(group, nr, size): \
++		(dir == DRM_IOC_WRITE ? _IOWN(group, nr, size): \
++			_IORN(group, nr, size)))
++
+ #else /* One of the *BSDs */
+ 
+ #include <sys/ioccom.h>

@@ -66,6 +66,7 @@ BASE_SUBDIRS = \
 
 DESKTOP_SUBDIRS = \
 	compositeproto \
+	dri2proto \
 	e_dbus \
 	ecore \
 	edje \
@@ -80,7 +81,10 @@ DESKTOP_SUBDIRS = \
 	ethumb \
 	evas \
 	evas_generic_loaders \
+	fixesproto \
+	glproto \
 	libast \
+	libdrm \
 	libgif \
 	libiconv \
 	libjpeg \
@@ -91,10 +95,13 @@ DESKTOP_SUBDIRS = \
 	libxau \
 	libxcb \
 	libxcomposite \
+	libxext \
 	libxrandr \
 	libxrender \
 	libxslt \
 	makedepend \
+	mesa \
+	pciaccess \
 	pthread-stubs \
 	randrproto \
 	renderproto \
@@ -102,9 +109,12 @@ DESKTOP_SUBDIRS = \
 	xcb-util \
 	xcb-util-image \
 	xcb-util-keysyms \
+	xextproto \
 	xproto
 
 TOOLCHAIN_SUBDIRS = \
+	autoconf \
+	automake \
 	binutils \
 	bison \
 	flex \
@@ -144,6 +154,8 @@ openldap: openssl1x
 #
 # toolchain dependencies
 #
+autoconf: m4
+automake: autoconf m4
 bison: flex
 gcc4: libgmp libmpfr m4 flex bison binutils
 flex: m4
@@ -167,12 +179,17 @@ enlightenment: libxcb xcb-util xcb-util-keysyms emotion
 ethumb: edje emotion
 evas: libgif libjpeg libpng eina libpixman xcb-util-image
 evas_generic_loaders: evas
+fixesproto: xextproto
+libdrm: pciaccess pthread-stubs
 libpng: libz
 libxcomposite: compositeproto
 libxcb: libxslt xcb-proto pthread-stubs libxau
+libxext: xproto xextproto
+libxfixes: xextproto
 libxrandr: randrproto libxrender
 libxrender: renderproto
 makedepend: xproto
+mesa: makedepend dri2proto libxfixes glproto libdrm libexpat libxml libxext
 xcb-util: xproto libxcb xcb-proto
 xcb-util-image: xproto libxcb xcb-proto
 xcb-util-keysyms: xproto libxcb xcb-proto

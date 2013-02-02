@@ -1,3 +1,5 @@
+/autoconf/autoconf-2.69-32
+/automake/automake-1.13.1-32
 /bash/bash-4.1-32
 /bind/bind-9.8.0-32
 /binutils/binutils-2.22-32
@@ -12,6 +14,7 @@
 /cpp/y.tab.c
 /cpp/y.tab.o
 /dialog/dialog-1.1-20111020-32
+/dri2proto/dri2proto-2.8-32
 /e_dbus/e_dbus-1.7.5-32
 /eet/eet-1.7.5-32
 /ecore/ecore-1.7.5-32
@@ -26,6 +29,7 @@
 /ethumb/ethumb-1.7.5-32
 /evas/evas-1.7.5-32
 /evas_generic_loaders/evas_generic_loaders-1.7.5-32
+/fixesproto/fixesproto-5.0-32
 /flex/flex-2.5.37-32
 /g11n/proto/
 /g11n/src/lib/iconv/common/amd64/
@@ -42,12 +46,14 @@
 /gcc4/compare
 /gcc4/gcc-4.4.4-32
 /gcc4/gcc-4.4.4-i386-build
+/glproto/glproto-1.4.16-32
 /gnupg/gnupg-1.4.11-32
 /gtar/tar-1.23-32
 /gzip/gzip-1.3.5-32
 /ipmitool/ipmitool-1.8.11-32
 /less/less-436-32
 /libast/libast-0.7-32
+/libdrm/libdrm-2.4.41-32
 /libexpat/expat-2.0.1-32
 /libexpat/expat-2.0.1-64
 /libgif/giflib-5.0.4-32
@@ -65,9 +71,12 @@
 /libpixman/libpixman-0.1.5-32
 /libpng/libpng-1.5.13-32
 /libtiff/tiff-4.0.3-32
+/libtool/libtool-2.4.2-32
 /libxau/libXau-1.0.7-32
 /libxcb/libxcb-1.9-32
 /libxcomposite/libXcomposite-0.4.4-32
+/libxext/libXext-1.3.1-32
+/libxfixes/libXfixes-5.0-32
 /libxml/libxml2-2.7.6-64
 /libxml/libxml2-2.7.6-32
 /libxrandr/libXrandr-1.4.0-32
@@ -89,6 +98,7 @@
 /openssl/openssl-0.9.8x-64
 /openssl1x/openssl-1.0.1c-32
 /pbzip2/pbzip2-1.1.6-32
+/pciaccess/libpciaccess-0.13-32
 /perl/perl-5.12.3-32
 /pkg-config/pkg-config-lite-0.28-1-32
 /proto
@@ -99,6 +109,9 @@
 /rsyslog/rsyslog-5.8.9-32
 /screen/screen-4.0.3-32
 /socat/socat-1.7.1.3-32
+/tools/buildenv
+/tools/libbuildenv-32.so
+/tools/libbuildenv-64.so
 /tun/tun-1.1-64
 /uuid/uuid-1.6.2-32
 /vim/vim73-32
@@ -108,4 +121,5 @@
 /xcb-util-image/xcb-util-image-0.3.9-32
 /xcb-util-keysyms/xcb-util-keysyms-0.3.9-32
 /xcb-proto/xcb-proto-1.8-32
+/xextproto/xextproto-7.2.1-32
 /xproto/xproto-7.0.23-32
