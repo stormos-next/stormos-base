@@ -24,14 +24,15 @@
 CFLAGS = -G -shared -fPIC
 LDFLAGS = -Mmapfile -ztext -zdefs -zinterpose
 LIBS = -ldl -lc
+SRC = syscall.c string.c
 
 all: buildenv 
 
-libbuildenv-32.so: libbuildenv.c mapfile
-	gcc -m32 $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $< -o $@
+libbuildenv-32.so: $(SRC) mapfile
+	gcc -m32 $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $(SRC) -o $@
 
-libbuildenv-64.so: libbuildenv.c mapfile
-	gcc -m64 $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $< -o $@ 
+libbuildenv-64.so: $(SRC) mapfile
+	gcc -m64 $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $(SRC) -o $@ 
 
 buildenv: buildenv.sh libbuildenv-32.so libbuildenv-64.so
 	cp $< $@ && chmod +x $@

@@ -60,6 +60,11 @@
 #define AUTORECONF_BIN_LEN	19	
 
 /*
+ * Look in string.c for this
+ */
+extern char *strreplace(const char*, const char*, const char*);
+
+/*
  * FIXME: This will leak memory
  */
 static char *__get_redirect(const char *old_path)
@@ -139,76 +144,6 @@ static int __inside_protodir(const char *path)
 	 * Check if given path resides in proto dir
 	 */
 	return (strncmp(path, PROTO_DIR_PATH, PROTO_DIR_LEN) == 0);
-}
-
-static int __str_index(const char *haystack, const char *needle)
-{
-        int i = 0, offset = 0;
-
-	/*
-	 * Return start position of substring, or -1
-	 */
-        while (1)
-        {
-                if (needle[i] == '\0')
-                        break;
-                else if (haystack[i + offset] == '\0')
-                        return -1;
-                else if (haystack[i + offset] != needle[i])
-                        offset++;
-                else
-                        i++;
-        }
-        return offset;
-}
-
-static char *__str_replace(const char *search, const char *replace, const char *string)
-{
-        int pos, search_len, replace_len, string_len;
-        char *new_string;
-
-        /*
-         * Search string not found.  Return string unmodified.
-         */
-        if ((pos = __str_index(string, search)) == -1)
-		new_string = strdup(string);
-
-        /*
-         * No search string given.  Return string unmodified.
-         */
-        else if ((search_len = strlen(search)) == 0)
-                new_string = strdup(string);
-
-        /*
-         * Nothing to replace with.  Return string unmodified.
-         */
-        else if ((replace_len = strlen(replace)) == 0)
-                new_string = strdup(string);
-
-        /*
-         * String is empty.  Return string unmodified.
-         */
-        else if ((string_len = strlen(string)) == 0)
-                new_string = strdup(string);
-
-        /*
-         * Out of memory
-         */
-        else if ((new_string = malloc(string_len - search_len + replace_len + 1)) == NULL)
-                new_string = strdup(string);
-
-        /*
-         * Slice and dice till we get the right output.
-         */
-	else
-	{
-		(void)strncpy(new_string, string, pos);
-		(void)strcpy(new_string + pos, replace);
-	        (void)strcpy(new_string + pos + replace_len, string + pos + search_len);
-		new_string[string_len - search_len + replace_len + 1] = '\0';
-	}
-
-        return new_string;
 }
 
 int creat(const char *path, mode_t mode)
@@ -452,7 +387,7 @@ int execve(const char *old_path, const char **old_argv, const char **envp)
 		 * FIXME: This is a hack for GNU M4
 		 */
 		if (strstr(old_argv[i], "=" AUTOCONF_DIR_PATH) != NULL)
-			new_argv[i] = __str_replace("=" AUTOCONF_DIR_PATH, "=" PROTO_DIR_PATH AUTOCONF_DIR_PATH, old_argv[i]);
+			new_argv[i] = strreplace("=" AUTOCONF_DIR_PATH, "=" PROTO_DIR_PATH AUTOCONF_DIR_PATH, old_argv[i]);
 		else
 			new_argv[i] = __get_redirect(old_argv[i]);
 	new_argv[i++] = NULL;
