@@ -112,6 +112,7 @@
 /tools/buildenv
 /tools/libbuildenv-32.so
 /tools/libbuildenv-64.so
+/tools/redirect.c
 /tun/tun-1.1-64
 /uuid/uuid-1.6.2-32
 /vim/vim73-32

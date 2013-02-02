@@ -45,7 +45,6 @@ if [ -z "$LD_PRELOAD_32" -o -z "$LD_PRELOAD_64" ]; then
 		echo "Error: libbuildenv-64.so not found!" >&1
 		exit 1
 	fi
-	export LD_DIRECT=no
 	export LD_PRELOAD_32=$LIBBUILDENV_32
 	export LD_PRELOAD_64=$LIBBUILDENV_64
 	exec ksh $0 $@
