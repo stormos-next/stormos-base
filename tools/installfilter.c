@@ -46,29 +46,75 @@
 #define AUTOMAKE_DIR_PATH	"/usr/share/automake"
 #define AUTOMAKE_DIR_LEN	19
 
+#define LIBTOOL_BIN_PATH        "/usr/bin/libtool"
+#define LIBTOOL_BIN_LEN         16
+#define AUTOM4TE_BIN_PATH       "/usr/bin/autom4te"
+#define AUTOM4TE_BIN_LEN        17
+#define ACLOCAL_BIN_PATH        "/usr/bin/aclocal"
+#define ACLOCAL_BIN_LEN         16
+#define AUTOCONF_BIN_PATH       "/usr/bin/autoconf"
+#define AUTOCONF_BIN_LEN        17
+#define AUTOMAKE_BIN_PATH       "/usr/bin/automake"
+#define AUTOMAKE_BIN_LEN        17
+#define AUTORECONF_BIN_PATH	"/usr/bin/autoreconf"
+#define AUTORECONF_BIN_LEN	19	
+
 /*
  * FIXME: This will leak memory
  */
-static const char *__get_redirect(const char *oldpath)
+static char *__get_redirect(const char *old_path)
 {
-	char *newpath;
+	char *new_path;
 
 	/*
-	 * Redirect libtool and aclocal paths to proto dir
+	 * FIXME: Where the eff is this coming from?
+	 */
+	if (strncmp(old_path, AUTOCONF_DIR_PATH "/m4/", AUTOCONF_DIR_LEN + 4) == 0)
+		asprintf(&new_path, PROTO_DIR_PATH ACLOCAL_DIR_PATH "%s", old_path + AUTOCONF_DIR_LEN + 3);	
+
+	/*
+	 * Redirect libtool and fiends directories to proto dir
 	 */	
-	if (strncmp(oldpath, LIBTOOL_DIR_PATH, LIBTOOL_DIR_LEN) == 0 ||
-	    strncmp(oldpath, ACLOCAL_DIR_PATH, ACLOCAL_DIR_LEN) == 0 ||
-	    strncmp(oldpath, AUTOCONF_DIR_PATH, AUTOCONF_DIR_LEN) == 0 ||
-	    strncmp(oldpath, AUTOMAKE_DIR_PATH, AUTOMAKE_DIR_LEN) == 0)
-		asprintf(&newpath, PROTO_DIR_PATH "%s", oldpath);
+	else if (strncmp(old_path, LIBTOOL_DIR_PATH, LIBTOOL_DIR_LEN) == 0 ||
+	    strncmp(old_path, ACLOCAL_DIR_PATH, ACLOCAL_DIR_LEN) == 0 ||
+	    strncmp(old_path, AUTOCONF_DIR_PATH, AUTOCONF_DIR_LEN) == 0 ||
+	    strncmp(old_path, AUTOMAKE_DIR_PATH, AUTOMAKE_DIR_LEN) == 0)
+		asprintf(&new_path, PROTO_DIR_PATH "%s", old_path);
+
+	/* 
+	 * Redirect libtool and fiends executables to proto dir
+	 */
+        else if (strncmp(old_path, LIBTOOL_BIN_PATH, LIBTOOL_BIN_LEN) == 0 ||
+            strncmp(old_path, LIBTOOL_BIN_PATH + 8, LIBTOOL_BIN_LEN - 8) == 0)
+                new_path = strdup(PROTO_DIR_PATH LIBTOOL_BIN_PATH);
+        else if (strncmp(old_path, AUTOM4TE_BIN_PATH, AUTOM4TE_BIN_LEN) == 0 ||
+            strncmp(old_path, AUTOM4TE_BIN_PATH + 8, AUTOM4TE_BIN_LEN - 8) == 0)
+                new_path = strdup(PROTO_DIR_PATH AUTOM4TE_BIN_PATH);
+        else if (strncmp(old_path, ACLOCAL_BIN_PATH, ACLOCAL_BIN_LEN) == 0 ||
+            strncmp(old_path, ACLOCAL_BIN_PATH + 8, ACLOCAL_BIN_LEN - 8) == 0)
+                new_path = strdup(PROTO_DIR_PATH ACLOCAL_BIN_PATH);
+        else if (strncmp(old_path, AUTOCONF_BIN_PATH, AUTOCONF_BIN_LEN) == 0 ||
+            strncmp(old_path, AUTOCONF_BIN_PATH + 8, AUTOCONF_BIN_LEN - 8) == 0)
+                new_path = strdup(PROTO_DIR_PATH AUTOCONF_BIN_PATH);
+        else if (strncmp(old_path, AUTOMAKE_BIN_PATH, AUTOMAKE_BIN_LEN) == 0 ||
+            strncmp(old_path, AUTOMAKE_BIN_PATH + 8, AUTOMAKE_BIN_LEN - 8) == 0)
+                new_path = strdup(PROTO_DIR_PATH AUTOMAKE_BIN_PATH);
+	else if (strncmp(old_path, AUTORECONF_BIN_PATH, AUTORECONF_BIN_LEN) == 0 ||
+	    strncmp(old_path, AUTORECONF_BIN_PATH + 8, AUTORECONF_BIN_LEN - 8) == 0)
+		new_path = strdup(PROTO_DIR_PATH AUTORECONF_BIN_PATH);
 
 	/*
 	 * No redirect
 	 */
 	else
-		newpath = strdup(oldpath);
+		new_path = strdup(old_path);
 
-	return newpath;
+#ifdef DEBUG_REDIRECT
+	if (strcmp(old_path, new_path) != 0)
+		fprintf(stderr, "Redirecting \"%s\" => \"%s\"\n", old_path, new_path);
+#endif
+
+	return new_path;
 }
 
 static int __is_crap_file(const char *path)
@@ -93,6 +139,76 @@ static int __inside_protodir(const char *path)
 	 * Check if given path resides in proto dir
 	 */
 	return (strncmp(path, PROTO_DIR_PATH, PROTO_DIR_LEN) == 0);
+}
+
+static int __str_index(const char *haystack, const char *needle)
+{
+        int i = 0, offset = 0;
+
+	/*
+	 * Return start position of substring, or -1
+	 */
+        while (1)
+        {
+                if (needle[i] == '\0')
+                        break;
+                else if (haystack[i + offset] == '\0')
+                        return -1;
+                else if (haystack[i + offset] != needle[i])
+                        offset++;
+                else
+                        i++;
+        }
+        return offset;
+}
+
+static char *__str_replace(const char *search, const char *replace, const char *string)
+{
+        int pos, search_len, replace_len, string_len;
+        char *new_string;
+
+        /*
+         * Search string not found.  Return string unmodified.
+         */
+        if ((pos = __str_index(string, search)) == -1)
+		new_string = strdup(string);
+
+        /*
+         * No search string given.  Return string unmodified.
+         */
+        else if ((search_len = strlen(search)) == 0)
+                new_string = strdup(string);
+
+        /*
+         * Nothing to replace with.  Return string unmodified.
+         */
+        else if ((replace_len = strlen(replace)) == 0)
+                new_string = strdup(string);
+
+        /*
+         * String is empty.  Return string unmodified.
+         */
+        else if ((string_len = strlen(string)) == 0)
+                new_string = strdup(string);
+
+        /*
+         * Out of memory
+         */
+        else if ((new_string = malloc(string_len - search_len + replace_len + 1)) == NULL)
+                new_string = strdup(string);
+
+        /*
+         * Slice and dice till we get the right output.
+         */
+	else
+	{
+		(void)strncpy(new_string, string, pos);
+		(void)strcpy(new_string + pos, replace);
+	        (void)strcpy(new_string + pos + replace_len, string + pos + search_len);
+		new_string[string_len - search_len + replace_len + 1] = '\0';
+	}
+
+        return new_string;
 }
 
 int creat(const char *path, mode_t mode)
@@ -303,21 +419,10 @@ DIR *opendir(const char *path)
 	return _opendir(__get_redirect(path));	
 }
 
-#define LIBTOOL_BIN_PATH	"/usr/bin/libtool"
-#define LIBTOOL_BIN_LEN		16
-#define AUTOM4TE_BIN_PATH	"/usr/bin/autom4te"
-#define AUTOM4TE_BIN_LEN	17
-#define ACLOCAL_BIN_PATH	"/usr/bin/aclocal"
-#define ACLOCAL_BIN_LEN		16
-#define AUTOCONF_BIN_PATH	"/usr/bin/autoconf"
-#define AUTOCONF_BIN_LEN	17
-#define AUTOMAKE_BIN_PATH	"/usr/bin/automake"
-#define AUTOMAKE_BIN_LEN	17
-
 int execve(const char *old_path, const char **old_argv, const char **envp)
 {
 	static int (*_execve)(const char *, const char **, const char **) = NULL;
-	char *new_path; char **new_argv;
+	const char *new_path; char **new_argv;
 	int i;
 
 	/*
@@ -327,48 +432,48 @@ int execve(const char *old_path, const char **old_argv, const char **envp)
 		_execve = (int (*)(const char *, const char **, const char **))dlsym(RTLD_NEXT, "execve");
 
 	/*
-	 * Redirect some requests to the proto dir
-	 *
-	 * Note: this also truncates the version numbers and forces
-	 *       everything to run in the default version.
+	 * Redirect some exec paths to proto dir
 	 */
-	if (strncmp(old_path, LIBTOOL_BIN_PATH, LIBTOOL_BIN_LEN) == 0 ||
-	    strncmp(old_path, LIBTOOL_BIN_PATH + 8, LIBTOOL_BIN_LEN - 8) == 0)
-		new_path = strdup(PROTO_DIR_PATH LIBTOOL_BIN_PATH);
-	else if (strncmp(old_path, AUTOM4TE_BIN_PATH, AUTOM4TE_BIN_LEN) == 0 ||
-	    strncmp(old_path, AUTOM4TE_BIN_PATH + 8, AUTOM4TE_BIN_LEN - 8) == 0)
-		new_path = strdup(PROTO_DIR_PATH AUTOM4TE_BIN_PATH);
-	else if (strncmp(old_path, ACLOCAL_BIN_PATH, ACLOCAL_BIN_LEN) == 0 ||
-	    strncmp(old_path, ACLOCAL_BIN_PATH + 8, ACLOCAL_BIN_LEN - 8) == 0)
-		new_path = strdup(PROTO_DIR_PATH ACLOCAL_BIN_PATH);
-	else if (strncmp(old_path, AUTOCONF_BIN_PATH, AUTOCONF_BIN_LEN) == 0 ||
-	    strncmp(old_path, AUTOCONF_BIN_PATH + 8, AUTOCONF_BIN_LEN - 8) == 0)
-		new_path = strdup(PROTO_DIR_PATH AUTOCONF_BIN_PATH);
-	else if (strncmp(old_path, AUTOMAKE_BIN_PATH, AUTOMAKE_BIN_LEN) == 0 ||
-	    strncmp(old_path, AUTOMAKE_BIN_PATH + 8, AUTOMAKE_BIN_LEN - 8) == 0)
-		new_path = strdup(PROTO_DIR_PATH AUTOMAKE_BIN_PATH);
-	else
-		new_path = strdup(old_path);
+	new_path = __get_redirect(old_path);
 
 	/*
-	 * Also need to fix up ARGV0 for interpreted scripts
+	 * Redirect any matching paths passed in argv 
 	 */
 	for (i = 0; old_argv[i] != NULL; i++)
 
-	if (new_path == NULL || (new_argv = malloc(sizeof(char *) * (i + 1))) == NULL)	
+	if (new_path == NULL || (new_argv = malloc(sizeof(char *) * i++)) == NULL)	
 	{
 		errno = ENOMEM;
 		return -1;
 	}
 
 	for (i = 0; old_argv[i] != NULL; i++)
-		if (i == 0)
-			new_argv[i] = strdup(new_path);
+		/*
+		 * FIXME: This is a hack for GNU M4
+		 */
+		if (strstr(old_argv[i], "=" AUTOCONF_DIR_PATH) != NULL)
+			new_argv[i] = __str_replace("=" AUTOCONF_DIR_PATH, "=" PROTO_DIR_PATH AUTOCONF_DIR_PATH, old_argv[i]);
 		else
-			new_argv[i] = strdup(old_argv[i]);
+			new_argv[i] = __get_redirect(old_argv[i]);
 	new_argv[i++] = NULL;
 
-	return _execve((const char *)new_path, (const char **)new_argv, envp);
+#ifdef DEBUG_EXECVE
+	fprintf(stderr, "Dumping conents of old_argv:\n");
+	for (i = 0; old_argv[i] != NULL; i++)
+		if (*old_argv[i] == '\0')
+			fprintf(stderr, "\t*** EMPTY ***\n");
+		else
+			fprintf(stderr, "\t%s\n", old_argv[i]);
+
+	fprintf(stderr, "Dumping contents of new_argv:\n");
+	for (i = 0; new_argv[i] != NULL; i++)
+		if (*new_argv[i] == '\0')
+			fprintf(stderr, "\t*** EMPTY ***\n");
+		else
+			fprintf(stderr, "\t%s\n", new_argv[i]);
+#endif
+
+	return _execve(new_path, (const char **)new_argv, envp);
 }
 
 int rename(const char *oldpath, const char *newpath)
@@ -459,6 +564,45 @@ int lstat64(const char *path, struct stat64 *statptr)
 	return _lstat64(__get_redirect(path), statptr);
 }
 #endif
+
+int symlink(const char *target, const char *path)
+{
+	static int (*_symlink)(const char *, const char *) = NULL;
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_symlink == NULL)
+		_symlink = (int (*)(const char *, const char *))dlsym(RTLD_NEXT, "symlink");	
+
+	/*
+	 * Redirect some link targets to protodir
+	 */
+	return _symlink(__get_redirect(target), path);
+}
+
+char *getenv(const char *name)
+{
+	static char *(*_getenv)(const char *) = NULL;
+	char *value;
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_getenv == NULL)
+		_getenv = (char *(*)(const char *))dlsym(RTLD_NEXT, "getenv");
+
+	/*
+	 * Get the real value of the variable
+	 */
+	if ((value = _getenv(name)) == NULL)
+		return NULL;
+
+	/*
+	 * Redirect some getenv results to the protodir
+	 */
+	return __get_redirect(value);
+}
 
 int chdir(const char *path)
 {

@@ -21,19 +21,20 @@
 # Copyright (c) 2013 Andrew Stormont.
 #
 
-LDFLAGS = -shared -fPIC -Wl,-M,mapfile -Wl,-z,text -Wl,-z,interpose -ldl 
+CFLAGS = -G -shared -fPIC
+LDFLAGS = -shared -fPIC -Mmapfile -ztext -zdefs -zinterpose
+LIBS = -ldl -lc
 
 all: installfilter 
 
 installfilter-32.so: installfilter.c mapfile
-	gcc -m32 -G $(LDFLAGS) installfilter.c -o installfilter-32.so
+	gcc -m32 $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $< -o $@
 
 installfilter-64.so: installfilter.c mapfile
-	gcc -m64 -G $(LDFLAGS) installfilter.c -o installfilter-64.so
+	gcc -m64 $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $< -o $@ 
 
 installfilter: installfilter.sh installfilter-32.so installfilter-64.so
-	cp installfilter.sh installfilter
-	chmod +x installfilter
+	cp $< $@ && chmod +x $@
 
 clean:
 	rm -f installfilter installfilter-32.so installfilter-64.so

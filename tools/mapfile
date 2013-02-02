@@ -40,6 +40,8 @@ $endif
 		opendir;
 		execve;
 		rename;
+		symlink;
+		getenv;
 		chdir;
 local:
 		*;
