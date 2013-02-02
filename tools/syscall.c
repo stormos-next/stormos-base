@@ -22,6 +22,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <dlfcn.h>
 #include <dirent.h>
@@ -228,6 +230,47 @@ int clearenv(void)
 	environ = new_environ;
 
 	return 0;
+}
+
+int unsetenv(const char *name)
+{
+	static int (*_unsetenv)(const char *) = NULL;
+
+	/*
+	 * Return success but dont remove LD_PRELOAD variables
+	 */
+	if (strcmp(name, "LD_PRELOAD_32") == 0 ||
+	    strcmp(name, "LD_PRELOAD_64") == 0)
+		return 0;
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_unsetenv == NULL)
+		_unsetenv = (int (*)(const char *))dlsym(RTLD_NEXT, "unsetenv");
+
+	return _unsetenv(name);
+}
+
+int setenv(const char *name, const char *value, int flag)
+{
+	static int (*_setenv)(const char *, const char *, int) = NULL;
+
+	/*
+	 * Return success but dont remove LD_PRELOAD variables
+	 */
+	if ((strcmp(name, "LD_PRELOAD_32") == 0 ||
+	    strcmp(name, "LD_PRELOAD_64") == 0) &&
+	    (value == NULL || *value == '\0'))
+		return 0;
+
+	/*
+	 * Load the next symbol which is hopefully in libc.
+	 */
+	if (_setenv == NULL)
+		_setenv = (int (*)(const char *, const char *, int))dlsym(RTLD_NEXT, "setenv");
+
+	return _setenv(name, value, flag);
 }
 
 DIR *opendir(const char *path)

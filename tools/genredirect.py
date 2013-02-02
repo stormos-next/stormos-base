@@ -63,6 +63,8 @@ out_fp.write("""/*
  * (c) Copyright 2013 Andrew Stormont.
  */
 
+#include <string.h>
+
 #include "config.h"
 
 char *get_redirect(const char *old_path)
@@ -90,7 +92,7 @@ for line in file(in_file):
 	else:
 		out_fp.write("\t%s (strncmp(old_path, \"%s\", %s) == 0)\n" \
 			% ("else if" if if_count else "if", line, len(line)))
-		out_fp.write("\t\tnew_path = strdup(PROTO_DIR_PATH \"%s\");\n" % line)
+		out_fp.write("\t\tasprintf(&new_path, PROTO_DIR_PATH \"%s\", old_path);\n")
 
 	if_count += 1
 

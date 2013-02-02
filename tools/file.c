@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 #include <dlfcn.h>
 #include <sys/fcntl.h>
 
