@@ -37,6 +37,8 @@ GXX =		$(DESTDIR)/usr/bin/g++
 GCC.64 =	$(GCC) -m64
 GXX.64 =	$(GXX) -m64
 
+BUILDENV =	$(BASE)/../tools/buildenv
+
 SYSINCDIRS =	/usr/include
 SYSLIBDIRS =	/usr/lib /lib
 
@@ -110,7 +112,9 @@ AUTOCONF_ENV.64 = \
 
 AUTOCONF_OPTS = \
 	--prefix=$(AUTOCONF_PREFIX) \
-	--sysconfdir=$(AUTOCONF_SYSCONFDIR)
+	--sysconfdir=$(AUTOCONF_SYSCONFDIR) \
+	--disable-static \
+	--enable-shared
 
 AUTOCONF_OPTS.32 = \
 	$(AUTOCONF_OPTS)

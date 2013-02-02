@@ -85,22 +85,22 @@ static char *__get_redirect(const char *old_path)
 	 * Redirect libtool and fiends executables to proto dir
 	 */
         else if (strncmp(old_path, LIBTOOL_BIN_PATH, LIBTOOL_BIN_LEN) == 0 ||
-            strncmp(old_path, LIBTOOL_BIN_PATH + 8, LIBTOOL_BIN_LEN - 8) == 0)
+            strncmp(old_path, LIBTOOL_BIN_PATH + 8, LIBTOOL_BIN_LEN - 9) == 0)
                 new_path = strdup(PROTO_DIR_PATH LIBTOOL_BIN_PATH);
         else if (strncmp(old_path, AUTOM4TE_BIN_PATH, AUTOM4TE_BIN_LEN) == 0 ||
-            strncmp(old_path, AUTOM4TE_BIN_PATH + 8, AUTOM4TE_BIN_LEN - 8) == 0)
+            strncmp(old_path, AUTOM4TE_BIN_PATH + 8, AUTOM4TE_BIN_LEN - 9) == 0)
                 new_path = strdup(PROTO_DIR_PATH AUTOM4TE_BIN_PATH);
         else if (strncmp(old_path, ACLOCAL_BIN_PATH, ACLOCAL_BIN_LEN) == 0 ||
-            strncmp(old_path, ACLOCAL_BIN_PATH + 8, ACLOCAL_BIN_LEN - 8) == 0)
+            strncmp(old_path, ACLOCAL_BIN_PATH + 8, ACLOCAL_BIN_LEN - 9) == 0)
                 new_path = strdup(PROTO_DIR_PATH ACLOCAL_BIN_PATH);
         else if (strncmp(old_path, AUTOCONF_BIN_PATH, AUTOCONF_BIN_LEN) == 0 ||
-            strncmp(old_path, AUTOCONF_BIN_PATH + 8, AUTOCONF_BIN_LEN - 8) == 0)
+            strncmp(old_path, AUTOCONF_BIN_PATH + 8, AUTOCONF_BIN_LEN - 9) == 0)
                 new_path = strdup(PROTO_DIR_PATH AUTOCONF_BIN_PATH);
         else if (strncmp(old_path, AUTOMAKE_BIN_PATH, AUTOMAKE_BIN_LEN) == 0 ||
-            strncmp(old_path, AUTOMAKE_BIN_PATH + 8, AUTOMAKE_BIN_LEN - 8) == 0)
+            strncmp(old_path, AUTOMAKE_BIN_PATH + 8, AUTOMAKE_BIN_LEN - 9) == 0)
                 new_path = strdup(PROTO_DIR_PATH AUTOMAKE_BIN_PATH);
 	else if (strncmp(old_path, AUTORECONF_BIN_PATH, AUTORECONF_BIN_LEN) == 0 ||
-	    strncmp(old_path, AUTORECONF_BIN_PATH + 8, AUTORECONF_BIN_LEN - 8) == 0)
+	    strncmp(old_path, AUTORECONF_BIN_PATH + 8, AUTORECONF_BIN_LEN - 9) == 0)
 		new_path = strdup(PROTO_DIR_PATH AUTORECONF_BIN_PATH);
 
 	/*

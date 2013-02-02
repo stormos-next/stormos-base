@@ -33,12 +33,24 @@ case "$DIRNAME" in
 	;;
 esac
 
-# Load our installfilter libraries and re-exec
 if [ -z "$LD_PRELOAD_32" -o -z "$LD_PRELOAD_64" ]; then
-	export LD_PRELOAD_32=$DIRNAME/installfilter-32.so
-	export LD_PRELOAD_64=$DIRNAME/installfilter-64.so
+	# Load our libraries and re-exec
+	LIBBUILDENV_32=$DIRNAME/libbuildenv-32.so
+	if [ ! -f $LIBBUILDENV_32 ]; then
+		echo "Error: libbuildenv-32.so not found!" >&1
+		exit 1
+	fi
+	LIBBUILDENV_64=$DIRNAME/libbuildenv-64.so
+	if [ ! -f $LIBBUILDENV_64 ]; then
+		echo "Error: libbuildenv-64.so not found!" >&1
+		exit 1
+	fi
+	export LD_DIRECT=no
+	export LD_PRELOAD_32=$LIBBUILDENV_32
+	export LD_PRELOAD_64=$LIBBUILDENV_64
 	exec ksh $0 $@
 else
 	# Run whatever command we're given
-	exec $@
+	exec env - PATH=$PATH LD_PRELOAD_32=$LD_PRELOAD_32 \
+		LD_PRELOAD_64=$LD_PRELOAD_64 $@
 fi

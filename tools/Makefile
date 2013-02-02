@@ -22,19 +22,20 @@
 #
 
 CFLAGS = -G -shared -fPIC
-LDFLAGS = -shared -fPIC -Mmapfile -ztext -zdefs -zinterpose
+LDFLAGS = -Mmapfile -ztext -zdefs -zinterpose
 LIBS = -ldl -lc
 
-all: installfilter 
+all: buildenv 
 
-installfilter-32.so: installfilter.c mapfile
+libbuildenv-32.so: libbuildenv.c mapfile
 	gcc -m32 $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $< -o $@
 
-installfilter-64.so: installfilter.c mapfile
+libbuildenv-64.so: libbuildenv.c mapfile
 	gcc -m64 $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $< -o $@ 
 
-installfilter: installfilter.sh installfilter-32.so installfilter-64.so
+buildenv: buildenv.sh libbuildenv-32.so libbuildenv-64.so
 	cp $< $@ && chmod +x $@
 
 clean:
-	rm -f installfilter installfilter-32.so installfilter-64.so
+	rm -f buildenv libbuildenv-32.so libbuildenv-64.so
+# DO NOT DELETE
