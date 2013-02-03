@@ -1,0 +1,11 @@
+--- Mesa-8.0.5-32/src/mesa/drivers/x11/Makefile.bak	Sun Feb  3 12:48:25 2013
++++ Mesa-8.0.5-32/src/mesa/drivers/x11/Makefile	Sun Feb  3 12:51:07 2013
+@@ -41,7 +41,7 @@
+ 	-I$(TOP)/src/mesa/main \
+ 	$(X11_INCLUDES)
+ 
+-CORE_MESA = $(TOP)/src/mesa/libmesa.a $(TOP)/src/mapi/glapi/libglapi.a
++CORE_MESA = $(TOP)/src/mesa/libmesa.a $(TOP)/src/mapi/glapi/libglapi.a $(TOP)/src/glsl/libglsl.a
+ 
+ ifeq ($(SHARED_GLAPI),1)
+ GL_LIB_DEPS := -L$(TOP)/$(LIB_DIR) -l$(GLAPI_LIB) $(GL_LIB_DEPS)
