@@ -25,6 +25,7 @@
 # Use is subject to license terms.
 #
 # Copyright (c) 2011 Joyent Inc., All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 set -o errexit
@@ -34,6 +35,7 @@ VERS=${1}
 PREFIX=${DESTDIR}/usr
 LIBDIR=${PREFIX}/lib
 ROOTLIBDIR=${DESTDIR}/lib
+PYLIBDIR=${LIBDIR}/python2.6/site-packages
 INCDIR=${PREFIX}/include/libxml2/libxml
 BINDIR=${PREFIX}/bin
 SHAREDIR=${PREFIX}/share
@@ -43,6 +45,7 @@ ACLOCALDIR=${SHAREDIR}/aclocal
 mkdir -p $PREFIX
 mkdir -p $LIBDIR
 mkdir -p $ROOTLIBDIR
+mkdir -p $PYLIBDIR
 mkdir -p $INCDIR
 mkdir -p $BINDIR
 mkdir -p $SHAREDIR
@@ -57,6 +60,9 @@ _install D .libs/libxml2.so ${ROOTLIBDIR}/libxml2.so.2 555
 _install L ../../lib/libxml2.so.2 ${LIBDIR}/libxml2.so.2
 _install L libxml2.so.2 ${ROOTLIBDIR}/libxml2.so
 _install L libxml2.so.2 ${LIBDIR}/libxml2.so
+
+_install D python/libxml2.py ${PYLIBDIR}/libxml2.py 555
+_install D python/.libs/libxml2mod.so ${PYLIBDIR}/libxml2mod.so 555
 
 _install E .libs/xmlcatalog ${BINDIR}/xmlcatalog 555
 _install S xml2-config ${BINDIR}/xml2-config 555
