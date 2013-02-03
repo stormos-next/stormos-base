@@ -112,9 +112,7 @@ AUTOCONF_ENV.64 = \
 
 AUTOCONF_OPTS = \
 	--prefix=$(AUTOCONF_PREFIX) \
-	--sysconfdir=$(AUTOCONF_SYSCONFDIR) \
-	--disable-static \
-	--enable-shared
+	--sysconfdir=$(AUTOCONF_SYSCONFDIR)
 
 AUTOCONF_OPTS.32 = \
 	$(AUTOCONF_OPTS)
