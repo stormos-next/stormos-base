@@ -34,8 +34,8 @@ libbuildenv-32.so: $(SRC) mapfile
 libbuildenv-64.so: $(SRC) mapfile
 	gcc -m64 $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $(SRC) -o $@ 
 
-buildenv: buildenv.sh libbuildenv-32.so libbuildenv-64.so
-	cp $< $@ && chmod +x $@
+buildenv: buildenv.c libbuildenv-32.so libbuildenv-64.so
+	gcc -m32 $< -o $@
 
 redirect.c: redirect.lst genredirect.py
 	python genredirect.py $< $@
