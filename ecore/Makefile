@@ -41,7 +41,7 @@ AUTOCONF_ENV += \
 
 # ecore requires libsocket
 AUTOCONF_ENV += \
-	LIBS="-lsocket"
+	LIBS="-lsocket -lnsl"
 
 AUTOCONF_OPTS += \
 	--enable-curl \
@@ -50,7 +50,8 @@ AUTOCONF_OPTS += \
 	--enable-ecore-x-randr \
 	--enable-ecore-x-composite \
 	--enable-ecore-evas-software-buffer \
-	--enable-ecore-evas-software-x11
+	--enable-ecore-evas-software-x11 \
+	--enable-ecore-evas-opengl-x11
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

@@ -177,7 +177,7 @@ embryo: eio
 emotion: edje
 enlightenment: libxcb xcb-util xcb-util-keysyms emotion
 ethumb: edje emotion
-evas: libgif libjpeg libpng eina libpixman xcb-util-image
+evas: eet libgif libjpeg libpng eina libpixman xcb-util-image
 evas_generic_loaders: evas
 fixesproto: xextproto
 libdrm: pciaccess pthread-stubs
@@ -191,8 +191,8 @@ libxrender: renderproto
 makedepend: xproto
 mesa: makedepend dri2proto libxfixes glproto libdrm libexpat libxml libxext
 xcb-util: xproto libxcb xcb-proto
-xcb-util-image: xproto libxcb xcb-proto
-xcb-util-keysyms: xproto libxcb xcb-proto
+xcb-util-image: xcb-util xproto libxcb xcb-proto
+xcb-util-keysyms: xcb-util xproto libxcb xcb-proto
 
 #
 # Toolchain rules: Used to build the and stage the gnu toolchain

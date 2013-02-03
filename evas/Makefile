@@ -55,7 +55,7 @@ XCB_LDFLAGS = \
 	-R/usr/X11R6
 
 # libevas requires libsocket
-LIBS += -lsocket
+LIBS += -lsocket -lnsl
 
 CFLAGS += -D_XOPEN_SOURCE=500
 
@@ -95,7 +95,7 @@ AUTOCONF_OPTS += \
 	--x-includes="/usr/X11R6/include" \
 	--x-libraries="/usr/X11R6/lib" \
 	--disable-pixman \
-	--disable-gl-xlib \
+	--enable-gl-xlib \
 	--enable-software-xlib \
 	--disable-software-xcb \
 	--enable-image-loader-png \
