@@ -1,0 +1,11 @@
+--- unzip60-32/unix/Makefile.bak	Sun Feb  3 23:14:05 2013
++++ unzip60-32/unix/Makefile	Sun Feb  3 23:14:27 2013
+@@ -121,7 +121,7 @@
+ INSTALL_D = mkdir -p
+ # on some systems, manext=l and MANDIR=/usr/man/man$(manext) may be appropriate
+ manext = 1
+-prefix = /usr/local
++prefix = $(DESTDIR)/usr
+ BINDIR = $(prefix)/bin#			where to install executables
+ MANDIR = $(prefix)/man/man$(manext)#	where to install man pages
+ INSTALLEDBIN = $(BINDIR)/funzip$E $(BINDIR)/unzip$E $(BINDIR)/unzipsfx$E \

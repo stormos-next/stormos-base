@@ -60,9 +60,11 @@ BASE_SUBDIRS = \
 	screen \
 	socat \
 	tun \
+	unzip \
 	uuid \
 	vim \
-	wget
+	wget \
+	zip
 
 DESKTOP_SUBDIRS = \
 	compositeproto \

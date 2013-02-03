@@ -1,0 +1,10 @@
+--- unzip60/unix/configure.bak	Sun Feb  3 22:25:51 2013
++++ unzip60/unix/configure	Sun Feb  3 22:26:23 2013
+@@ -1,6 +1,4 @@
+-:
+-#!/bin/sh -x
+-# The above : is necessary on some buggy systems.
++#!/bin/sh
+ 
+ # configure: Guess values for system-dependent variables
+ # Output the flag definitions to the file "flags".

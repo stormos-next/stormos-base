@@ -115,6 +115,7 @@
 /tools/libbuildenv-64.so
 /tools/redirect.c
 /tun/tun-1.1-64
+/unzip/unzip60-32
 /uuid/uuid-1.6.2-32
 /vim/vim73-32
 /wget/wget-1.12-32
@@ -125,3 +126,4 @@
 /xcb-proto/xcb-proto-1.8-32
 /xextproto/xextproto-7.2.1-32
 /xproto/xproto-7.0.23-32
+/zip/zip30-32

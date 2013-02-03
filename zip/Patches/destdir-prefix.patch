@@ -1,0 +1,11 @@
+--- zip30-32/unix/Makefile.bak	Sun Feb  3 22:54:07 2013
++++ zip30-32/unix/Makefile	Sun Feb  3 22:55:18 2013
+@@ -38,7 +38,7 @@
+ MANFLAGS = 644
+ 
+ # target directories - where to install executables and man pages to
+-prefix = /usr/local
++prefix = $(DESTDIR)/usr
+ BINDIR = $(prefix)/bin
+ MANEXT=1
+ MANDIR = $(prefix)/man/man$(MANEXT)
