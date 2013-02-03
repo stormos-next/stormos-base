@@ -25,8 +25,6 @@ VER =	mpfr-3.1.1
 
 include ../Makefile.defs
 
-GCC =	/opt/gcc-3.4.3/bin/gcc
-
 AUTOCONF_OPTS += \
 	--includedir=/usr/include/mpfr \
 	--with-gmp-include=$(DESTDIR)/usr/include/gmp

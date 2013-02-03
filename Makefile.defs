@@ -32,8 +32,18 @@ PATH =		$(DESTDIR)/usr/bin:/usr/bin:/usr/sbin:/sbin:/opt/csw/bin
 MAKE =		gmake
 PARALLEL =	-j8
 MAKE_VERBOSE =	V=1
+
+#
+# We only use the host systems compiler to build the toolchain
+# 
+ifeq ($(STRAP),strap)
+GCC =		/opt/gcc-3.4.3/bin/gcc
+GXX =		/opt/gcc-3.4.3/bin/g++
+else
 GCC =		$(DESTDIR)/usr/bin/gcc
 GXX =		$(DESTDIR)/usr/bin/g++
+endif
+
 GCC.64 =	$(GCC) -m64
 GXX.64 =	$(GXX) -m64
 
@@ -59,9 +69,9 @@ ifneq ($(STRAP),strap)
 	ifneq ($(shell ld --help 2>&1 | grep assert-deflib),)
 		GENLDFLAGS += -Wl,-zassert-deflib
 	endif
-#	ifneq ($(shell ld --help 2>&1 | grep fatal-warnings),)
-#		GENLDFLAGS += -Wl,-zfatal-warnings
-#	endif
+	ifneq ($(shell ld --help 2>&1 | grep fatal-warnings),)
+		GENLDFLAGS += -Wl,-zfatal-warnings
+	endif
 endif
 T32_LDFLAGS =	$(SYSLIBDIRS:%=-L$(DESTDIR)/%)
 T64_LDFLAGS =	$(SYSLIBDIRS:%=-L$(DESTDIR)/%/64)

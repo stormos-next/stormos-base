@@ -31,9 +31,6 @@ TARBALL_COMPRESS =	-j
 PATCHES =	Patches/*
 PATCHSTRIP = 0
 
-GCC =	/opt/gcc-3.4.3/bin/gcc
-GXX =	/opt/gcc-3.4.3/bin/g++
-
 # If we don't force the 32bit ABI libgmp will try to build 64bit
 AUTOCONF_ENV += \
 	ABI=32

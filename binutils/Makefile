@@ -34,8 +34,6 @@ AUTOCONF_OPTS = \
 	--program-prefix=g
 
 AUTOCONF_ENV += \
-	CC=/opt/gcc-3.4.3/bin/gcc \
-	CXX=/opt/gcc-3.4.3/bin/g++ \
 	DESTDIR=$(DESTDIR) \
 	MAKE=gmake \
 	CONFIG_SHELL=/bin/bash

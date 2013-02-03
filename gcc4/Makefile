@@ -33,7 +33,6 @@ PATCHSTRIP = 0
 
 CLEANFILES +=	$(VER)-i386-build
 
-GCC =	/opt/gcc-3.4.3/bin/gcc
 GXX =	/bin/false
 
 AUTOCONF_OPTS += \

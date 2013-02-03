@@ -25,9 +25,6 @@ VER =	bison-2.7
 
 include ../Makefile.defs
 
-GCC =	/opt/gcc-3.4.3/bin/gcc
-GXX =	/opt/gcc-3.4.3/bin/g++
-
 AUTOCONF_ENV += \
 	M4=$(DESTDIR)/usr/gnu/bin/m4
 

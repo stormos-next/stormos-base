@@ -202,19 +202,19 @@ xcb-util-keysyms: xcb-util xproto libxcb xcb-proto
 # (subdirname): build and install into protodir 
 $(TOOLCHAIN_SUBDIRS): FRC
 	(cd $@ && \
-	    STRAP=$(STRAP) \
+	    STRAP=strap \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
 # install-(subdirname): install onto host
 $(TOOLCHAIN_SUBDIRS:%=install-%): $@ 
 	(cd $(patsubst install-%,%,$@) && \
-	    STRAP=$(STRAP) \
+	    STRAP=strap \
 	    $(MAKE) DESTDIR=/ install)
 
 # clean-(subdirname): sanitize build directory
 $(TOOLCHAIN_SUBDIRS:%=clean-%): FRC
 	(cd $(patsubst clean-%,%,$@) && \
-	    STRAP=$(STRAP) \
+	    STRAP=strap \
 	    $(MAKE) DESTDIR=$(DESTDIR) clean)
 
 toolchain: $(TOOLCHAIN_SUBDIRS)
@@ -229,19 +229,16 @@ clean-toolchain: $(TOOLCHAIN_SUBDIRS:%=clean-%)
 # (subdirname): build and install into proto dir
 $(DESKTOP_SUBDIRS): FRC
 	(cd $@ && \
-	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
 # install-(subdirname): install onto host
 $(DESKTOP_SUBDIRS:%=install-%): $@
 	(cd $(patsubst install-%,%,$@) && \
-	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=/ install)
 
 # clean-(subdirname): sanitize build directory
 $(DESKTOP_SUBDIRS:%=clean-%): FRC
 	(cd $(patsubst clean-%,%,$@) && \
-	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) clean)
 
 desktop: $(DESKTOP_SUBDIRS)
@@ -256,19 +253,16 @@ clean-toolchain: $(DESKTOP_SUBDIRS:%=clean-%)
 # (subdirname): build and install into proto dir 
 $(BASE_SUBDIRS): FRC
 	(cd $@ && \
-	    SRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) install)
 
 # install-(subdirname): install onto host
 $(BASE_SUBDIRS:%=install-%): $@
 	(cd $(patsubst install-%,%,$@) && \
-	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=/ install)
 
 # clean-(subdirname): sanitize build directory
 $(BASE_SUBDIRS:%=clean-%): FRC
 	(cd $(patsubst clean-%,%,$@) && \
-	    STRAP=$(STRAP) \
 	    $(MAKE) DESTDIR=$(DESTDIR) clean)
 
 base: $(BASE_SUBDIRS)
