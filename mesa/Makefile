@@ -27,6 +27,8 @@ include ../Makefile.defs
 
 TARBALL = MesaLib-8.0.5.tar.gz
 
+PATCHES = Patches/*
+
 # Help mesa find our libs
 AUTOCONF_ENV += \
 	PKG_CONFIG_PATH="$(DESTDIR)/usr/X11R6/lib/pkgconfig"
@@ -52,13 +54,17 @@ AUTOCONF_ENV += \
 	XCB_DRI2_CFLAGS="$(X11_CFLAGS)" \
 	XCB_DRI2_LIBS="$(X11_LIBS)"
 
+CFLAGS += $(X11_CFLAGS)
+
 # Enable the bare minium we can get away with
 AUTOCONF_OPTS += \
 	--enable-32-bit \
 	--disable-64-bit \
-	--disable-opencl \
-	--disable-r600-llvm-compiler \
-	--with-gallium-drivers=r600,swrast
+	--with-gallium-drivers=swrast
+
+# Use python-libxml2 from proto dir
+OVERRIDES += \
+	PYTHONPATH=$(DESTDIR)/usr/lib/python2.6/site-packages
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

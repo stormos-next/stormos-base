@@ -1,0 +1,39 @@
+--- Mesa-8.0.5-32/src/gallium/state_trackers/glx/xlib/xm_st.c.bak	Sun Feb  3 11:08:23 2013
++++ Mesa-8.0.5-32/src/gallium/state_trackers/glx/xlib/xm_st.c	Sun Feb  3 11:12:27 2013
+@@ -26,12 +26,12 @@
+  *    Chia-I Wu <olv@lunarg.com>
+  */
+ 
+-#include "xm_api.h"
+-#include "xm_st.h"
+-
+ #include "util/u_inlines.h"
+ #include "util/u_atomic.h"
+ 
++#include "xm_api.h"
++#include "xm_st.h"
++
+ struct xmesa_st_framebuffer {
+    XMesaDisplay display;
+    XMesaBuffer buffer;
+--- Mesa-8.0.5-32/src/gallium/state_trackers/glx/xlib/xm_api.c.bak	Sun Feb  3 11:14:41 2013
++++ Mesa-8.0.5-32/src/gallium/state_trackers/glx/xlib/xm_api.c	Sun Feb  3 11:15:51 2013
+@@ -53,9 +53,6 @@
+ #undef __WIN32__
+ #endif
+ 
+-#include "xm_api.h"
+-#include "xm_st.h"
+-
+ #include "pipe/p_context.h"
+ #include "pipe/p_defines.h"
+ #include "pipe/p_screen.h"
+@@ -64,6 +61,8 @@
+ #include "util/u_atomic.h"
+ #include "util/u_inlines.h"
+ 
++#include "xm_api.h"
++#include "xm_st.h"
+ #include "xm_public.h"
+ #include <GL/glx.h>
+ 
