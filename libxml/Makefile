@@ -48,18 +48,15 @@ CPPFLAGS +=	\
 
 AUTOCONF_OPTS += \
 	--with-threads \
-	--with-python \
 	--enable-symbol-versioning=$(BASE)/mapfile
 
-PATCHES =	Patches/*
+AUTOCONF_OPTS.32 += \
+	--with-python=/usr/bin/python
 
-# Regen makefiles after patching
-#FROB_SENTINEL.32 = \
-#	(mkdir -p $(DESTDIR)/usr/share/aclocal ; cd $(VER.32) ; \
-#	ACLOCAL='aclocal -I$(DESTDIR)/usr/share/aclocal' autoreconf -ivf)
-#FROB_SENTINEL.64 = \
-#	(mkdir -p $(DESTDIR)/usr/share/aclocal ; cd $(VER.64) ; \
-#	ACLOCAL='aclocal -I$(DESTDIR)/usr/share/aclocal' autoreconf -ivf)
+AUTOCONF_OPTS.64 += \
+	--without-python
+
+PATCHES =	Patches/*
 
 include ../Makefile.targ
 
