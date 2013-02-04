@@ -21,25 +21,26 @@
 # Copyright (c) 2013 Andrew Stormont.
 #
 
+include ../Makefile.defs
+
 CFLAGS = -G -shared -fPIC
 LDFLAGS = -Mmapfile -ztext -zdefs -zinterpose
 LIBS = -ldl -lc
 SRC = syscall.c file.c string.c redirect.c
 
-all: buildenv 
+all: buildenv
 
 libbuildenv-32.so: $(SRC) mapfile
-	gcc -m32 $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $(SRC) -o $@
+	$(GCC) $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $(SRC) -o $@
 
 libbuildenv-64.so: $(SRC) mapfile
-	gcc -m64 $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $(SRC) -o $@ 
+	$(GCC.64) $(CFLAGS) $(LDFLAGS:%=-Wl,%) $(LIBS) $(SRC) -o $@ 
 
 buildenv: buildenv.c libbuildenv-32.so libbuildenv-64.so
-	gcc -m32 $< -o $@
+	$(GCC) $< -o $@
 
 redirect.c: redirect.lst genredirect.py
 	python genredirect.py $< $@
 
 clean:
 	rm -f buildenv redirect.c libbuildenv-32.so libbuildenv-64.so
-# DO NOT DELETE
