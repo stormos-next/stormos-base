@@ -26,7 +26,7 @@
 
 BASE =		$(PWD)
 DESTDIR =	$(BASE)/proto
-PATH =		$(DESTDIR)/usr/bin:/usr/bin:/usr/sbin:/sbin:/opt/csw/bin
+PATH =		$(DESTDIR)/usr/bin:/usr/bin:/usr/sbin:/sbin:/opt/schily/bin:/opt/csw/bin
 
 BASE_SUBDIRS = \
 	bash \

@@ -36,8 +36,5 @@ AUTOCONF_OPTS += \
 	--with-features=huge \
 	--without-x
 
-TARBALL =		$(VER).tar.bz2
-TARBALL_COMPRESS =	-j
-
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

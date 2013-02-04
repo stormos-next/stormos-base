@@ -40,7 +40,7 @@ install: all
 unpack: $(TARBALL)
 	-rm -rf $(VER.32)
 	mkdir -p .unpack32
-	gtar x -C .unpack32 $(TARBALL_COMPRESS) --no-same-owner -f $(TARBALL)
+	gtar xz -C .unpack32 --no-same-owner -f $(TARBALL)
 	$(APPLY_PATCHES.32)
 	mv -f .unpack32/$(VER) ./$(VER.32)
 	-rmdir .unpack32

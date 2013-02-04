@@ -37,9 +37,6 @@ AUTOCONF_OPTS += \
 	--infodir=/usr/share/info \
 	--disable-rpath
 
-TARBALL =		$(VER).tar.bz2
-TARBALL_COMPRESS =	-j
-
 PATCHES =	Patches/*
 
 include ../Makefile.targ

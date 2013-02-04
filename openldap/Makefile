@@ -25,7 +25,6 @@ VER =	openldap-2.4.26
 
 include ../Makefile.defs
 
-TARBALL =		$(VER).tgz
 AUTOCONF_PREFIX =	/usr/openldap
 AUTOCONF_OUT =		config.h
 

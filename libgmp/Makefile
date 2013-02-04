@@ -25,9 +25,6 @@ VER =	gmp-5.1.0
 
 include ../Makefile.defs
 
-TARBALL =		$(VER).tar.bz2
-TARBALL_COMPRESS =	-j
-
 PATCHES =	Patches/*
 PATCHSTRIP = 0
 

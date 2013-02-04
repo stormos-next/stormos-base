@@ -74,10 +74,31 @@ $(AUTOCONF_OUT.64): $(VER.64)/configure
 	    $(BUILD_ENV) PATH=$(PATH) MAKE=$(MAKE) \
 	    $(AUTOCONF_ENV.64) ./configure $(AUTOCONF_OPTS.64))
 
+define unpack
+	@case "$(1)" in \
+		*.tar.gz|*.tgz) \
+			echo "Unpacking $(1) in $(2)"; \
+			gtar xz -C $(2) --no-same-owner -f $(1) \
+		;; \
+		*.tar.bz2) \
+			echo "Unpacking $(1) in $(2)"; \
+			gtar xj -C $(2) --no-same-owner -f $(1) \
+		;; \
+		*.tar.xz) \
+			echo "Unpacking $(1) in $(2)"; \
+			xz -dc $(1) | gtar x -C $(2) --no-same-owner \
+		;; \
+		*) \
+			echo "Error: archive type not supported: $(1)" 1>&1; \
+			exit 1 \
+		;; \
+	esac
+endef
+
 $(VER.32)/$(UNPACK_SENTINEL): $(TARBALL)
 	-rm -rf $(VER.32)
 	mkdir -p .unpack32
-	gtar x -C .unpack32 $(TARBALL_COMPRESS) --no-same-owner -f $(TARBALL)
+	$(call unpack,$(TARBALL),.unpack32)
 	$(APPLY_PATCHES.32)
 	mv -f .unpack32/$(VER) ./$(VER.32)
 	-rmdir .unpack32
@@ -87,7 +108,7 @@ $(VER.32)/$(UNPACK_SENTINEL): $(TARBALL)
 $(VER.64)/$(UNPACK_SENTINEL): $(TARBALL)
 	-rm -rf $(VER.64)
 	mkdir -p .unpack64
-	gtar x -C .unpack64 $(TARBALL_COMPRESS) --no-same-owner -f $(TARBALL)
+	$(call unpack,$(TARBALL),.unpack64)
 	$(APPLY_PATCHES.64)
 	mv -f .unpack64/$(VER) ./$(VER.64)
 	-rmdir .unpack64

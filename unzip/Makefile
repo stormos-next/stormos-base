@@ -25,8 +25,6 @@ VER =	unzip60
 
 include ../Makefile.defs
 
-TARBALL = $(VER).tgz
-
 PATCHES = Patches/*
 
 UNPACK_SENTINEL = unix/configure

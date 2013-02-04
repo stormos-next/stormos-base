@@ -19,14 +19,11 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012, Joyent, Inc.  All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 VER =	gnupg-1.4.11
 
 include ../Makefile.defs
-
-TARBALL =		$(VER).tar.bz2
-TARBALL_COMPRESS =	-j
-
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

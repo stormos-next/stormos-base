@@ -26,9 +26,6 @@ VER =	curl-7.27.0
 
 include ../Makefile.defs
 
-TARBALL =		$(VER).tar.bz2
-TARBALL_COMPRESS =	-j
-
 AUTOCONF_OPTS += \
 	--with-ssl=$(DESTDIR)/usr \
 	--with-libidn=$(DESTDIR)/usr

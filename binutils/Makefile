@@ -26,8 +26,6 @@ VER =	binutils-2.22
 
 include ../Makefile.defs
 
-TARBALL =		$(VER).tar.bz2
-TARBALL_COMPRESS =	-j
 AUTOCONF_OPTS = \
 	--prefix=/usr/gnu \
 	--enable-64-bit-bfd \

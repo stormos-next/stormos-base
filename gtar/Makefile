@@ -19,6 +19,7 @@
 # CDDL HEADER END
 #
 # Copyright (c) 2012, Joyent, Inc.  All rights reserved.
+# Copyright (c) 2013 Andrew Stormont.  All rights reserved.
 #
 
 VER =	tar-1.23
@@ -29,11 +30,9 @@ AUTOCONF_ENV += \
 	LD_OPTIONS="-M $(BASE)/mapfile_noexstk"
 AUTOCONF_OPTS += \
 	--with-rmt=/usr/sbin/rmt \
+	--with-xz=/opt/schily/bin/xz \
 	--libexecdir=/usr/sbin \
 	--program-prefix=g
-
-TARBALL =		$(VER).tar.bz2
-TARBALL_COMPRESS =	-j
 
 include ../Makefile.targ
 
@@ -41,4 +40,4 @@ all: all_autoconf
 
 install: all
 	mkdir -p $(DESTDIR)/usr/bin
-	ginstall -m 0555 $(BASE)/$(VER.32)/src/tar $(DESTDIR)/usr/bin/gtar
+	/usr/ucb/install -c -m 0555 $(BASE)/$(VER.32)/src/tar $(DESTDIR)/usr/bin/gtar

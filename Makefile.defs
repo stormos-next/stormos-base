@@ -27,7 +27,7 @@ DESTDIR =	$(BASE)/../proto
 VER.32 =	$(VER)-32$(STRAP)
 VER.64 =	$(VER)-64$(STRAP)
 
-PATH =		$(DESTDIR)/usr/bin:/usr/bin:/usr/sbin:/sbin:/opt/csw/bin
+PATH =		$(DESTDIR)/usr/bin:/usr/bin:/usr/sbin:/sbin:/opt/schily/bin:/opt/csw/bin
 
 MAKE =		gmake
 PARALLEL =	-j8
@@ -132,8 +132,7 @@ AUTOCONF_OPTS.64 = \
 
 OVERRIDES =	$(MAKE_VERBOSE)
 
-TARBALL =		$(VER).tar.gz
-TARBALL_COMPRESS =	-z
+TARBALL =		$(wildcard $(VER).tar.gz $(VER).tgz $(VER).tar.bz2 $(VER).tar.xz)
 
 UNPACK_SENTINEL =	configure
 FROB_SENTINEL.32 =	chmod 755 $(VER.32)/$(UNPACK_SENTINEL)
