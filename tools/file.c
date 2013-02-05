@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <limits.h>
 #include <dlfcn.h>
 #include <sys/fcntl.h>
 
@@ -37,11 +38,16 @@ extern char *get_redirect(const char *);
 static int block_file(const char *path)
 {
 	int len;
+	char dir[PATH_MAX], tmp_dir[PATH_MAX];
 
 	/*
 	 * Only block files being written to the protodir
 	 */
-	if (strncmp(path, PROTO_DIR_PATH, PROTO_DIR_LEN) != 0)
+	(void) strcpy(tmp_dir, path);
+	(void) dirname(tmp_dir);
+	(void) realpath(tmp_dir, dir);
+
+	if (strncmp(dir, PROTO_DIR_PATH, PROTO_DIR_LEN) != 0)
 		return 0;
 
 	/*
