@@ -21,7 +21,7 @@
 # Copyright (c) 2013 Andrew Stormont. All rights reserved.
 #
 
-VER =	libpixman-0.1.5
+VER =	pixman-0.28.2
 
 include ../Makefile.defs
 include ../Makefile.targ
