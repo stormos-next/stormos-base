@@ -24,5 +24,10 @@
 VER =	pixman-0.28.2
 
 include ../Makefile.defs
+
+# Put this with the X stuff
+AUTOCONF_OPTS = \
+	--prefix=/usr/X11R6
+
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

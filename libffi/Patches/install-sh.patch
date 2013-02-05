@@ -1,0 +1,33 @@
+--- libffi-3.0.11-32/include/Makefile.in.bak	Mon Feb  4 07:21:42 2013
++++ libffi-3.0.11-32/include/Makefile.in	Mon Feb  4 07:22:22 2013
+@@ -24,7 +24,7 @@
+ install_sh_DATA = $(install_sh) -c -m 644
+ install_sh_PROGRAM = $(install_sh) -c
+ install_sh_SCRIPT = $(install_sh) -c
+-INSTALL_HEADER = $(INSTALL_DATA)
++INSTALL_HEADER = $(install_sh_DATA)
+ transform = $(program_transform_name)
+ NORMAL_INSTALL = :
+ PRE_INSTALL = :
+--- libffi-3.0.11-32/man/Makefile.in.bak	Mon Feb  4 07:23:29 2013
++++ libffi-3.0.11-32/man/Makefile.in	Mon Feb  4 07:25:07 2013
+@@ -274,15 +274,15 @@
+ 	sed 'N;N;s,\n, ,g' | { \
+ 	list=; while read file base inst; do \
+ 	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+-	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man3dir)/$$inst'"; \
+-	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man3dir)/$$inst" || exit $$?; \
++	    echo " $(install_sh_DATA) '$$file' '$(DESTDIR)$(man3dir)/$$inst'"; \
++	    $(install_sh_DATA) "$$file" "$(DESTDIR)$(man3dir)/$$inst" || exit $$?; \
+ 	  fi; \
+ 	done; \
+ 	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+ 	while read files; do \
+ 	  test -z "$$files" || { \
+-	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man3dir)'"; \
+-	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man3dir)" || exit $$?; }; \
++	    echo " $(install_sh_DATA) $$files '$(DESTDIR)$(man3dir)'"; \
++	    $(install_sh_DATA) $$files "$(DESTDIR)$(man3dir)" || exit $$?; }; \
+ 	done; }
+ 
+ uninstall-man3:

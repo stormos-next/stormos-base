@@ -67,6 +67,7 @@ BASE_SUBDIRS = \
 	zip
 
 DESKTOP_SUBDIRS = \
+	cairo \
 	compositeproto \
 	dri2proto \
 	e_dbus \
@@ -84,9 +85,12 @@ DESKTOP_SUBDIRS = \
 	evas \
 	evas_generic_loaders \
 	fixesproto \
+	gettext \
 	glproto \
 	libast \
 	libdrm \
+	libffi \
+	libfreetype \
 	libgif \
 	libiconv \
 	libjpeg \
@@ -167,6 +171,7 @@ make: gcc4
 #
 # enlightenment dependencies 
 #
+cairo: libfreetype libpng libpixman 
 e_dbus: ecore eina
 ecore: curl evas_generic_loaders libxrandr libxrender
 edje: ecore eet eina embryo liblua
@@ -179,7 +184,7 @@ embryo: eio
 emotion: edje
 enlightenment: libxcb xcb-util xcb-util-keysyms emotion
 ethumb: edje emotion
-evas: eet libgif libjpeg libpng eina libpixman xcb-util-image
+evas: eet libfreetype libgif libjpeg libpng eina libpixman xcb-util-image
 evas_generic_loaders: evas
 fixesproto: xextproto
 libdrm: pciaccess pthread-stubs

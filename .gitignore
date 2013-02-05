@@ -1,11 +1,13 @@
 /autoconf/autoconf-2.69-32
 /automake/automake-1.13.1-32
+/atk/atk-2.0.0-32
 /bash/bash-4.1-32
 /bind/bind-9.8.0-32
 /binutils/binutils-2.22-32
 /bison/bison-2.7-32
 /bzip2/bzip2-1.0.6
 /bzip2/bzgrep.tmp
+/cairo/cairo-1.12.12-32
 /compositeproto/compositeproto-0.4-32
 /coreutils/coreutils-8.13-32
 /curl/curl-7.27.0-32
@@ -43,9 +45,11 @@
 /g11n/src/lib/iconv/utf-8/*.bt
 /g11n/src/lib/iconv/utf-8/*.o
 /g11n/src/lib/iconv/utf-8/*.so
+/gettext/gettext-0.18.2-32
 /gcc4/compare
 /gcc4/gcc-4.4.4-32
 /gcc4/gcc-4.4.4-i386-build
+/glib/glib-2.30.3-32
 /glproto/glproto-1.4.16-32
 /gnupg/gnupg-1.4.11-32
 /gtar/tar-1.23-32
@@ -56,6 +60,8 @@
 /libdrm/libdrm-2.4.41-32
 /libexpat/expat-2.0.1-32
 /libexpat/expat-2.0.1-64
+/libffi/libffi-3.0.11-32
+/libfreetype/freetype-2.4.11-32
 /libgif/giflib-5.0.4-32
 /libgmp/gmp-5.1.0-32
 /libiconv/libiconv-1.14-32
@@ -68,7 +74,7 @@
 /libm/usr/src/libm/wos/libmvec
 /libm/usr/src/libm/wos64/amd64
 /libmpfr/mpfr-3.1.1-32
-/libpixman/libpixman-0.1.5-32
+/libpixman/pixman-0.28.2-32
 /libpng/libpng-1.5.13-32
 /libtiff/tiff-4.0.3-32
 /libtool/libtool-2.4.2-32

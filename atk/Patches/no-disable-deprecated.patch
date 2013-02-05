@@ -1,0 +1,20 @@
+--- atk-2.0.0-32/atk/Makefile.in.bak	Mon Feb  4 16:46:57 2013
++++ atk-2.0.0-32/atk/Makefile.in	Mon Feb  4 16:47:14 2013
+@@ -311,7 +311,6 @@
+ @PLATFORM_WIN32_TRUE@no_undefined = -no-undefined
+ INCLUDES = \
+ 	-I$(top_srcdir)		\
+-	-DG_DISABLE_DEPRECATED	\
+ 	-DATK_DISABLE_DEPRECATED	\
+ 	-DATK_COMPILATION	\
+ 	-DATK_LOCALEDIR="\"$(datadir)/locale\""	\
+--- atk-2.0.0-32/tests/Makefile.in.bak	Mon Feb  4 16:48:17 2013
++++ atk-2.0.0-32/tests/Makefile.in	Mon Feb  4 16:48:29 2013
+@@ -276,7 +276,6 @@
+ 
+ libatk = $(top_builddir)/atk/libatk-$(ATK_API_VERSION).la
+ INCLUDES = -I$(top_srcdir)	\
+-	-DG_DISABLE_DEPRECATED	\
+ 	$(DEP_CFLAGS)
+ 
+ DEPS = \
