@@ -1,10 +1,14 @@
 /autoconf/autoconf-2.69-32
+/autoconf/autoconf-2.69-32strap
 /automake/automake-1.13.1-32
+/automake/automake-1.13.1-32strap
 /atk/atk-2.0.0-32
 /bash/bash-4.1-32
 /bind/bind-9.8.0-32
 /binutils/binutils-2.22-32
+/binutils/binutils-2.22-32strap
 /bison/bison-2.7-32
+/bison/bison-2.7-32strap
 /bzip2/bzip2-1.0.6
 /bzip2/bzgrep.tmp
 /cairo/cairo-1.12.12-32
@@ -33,6 +37,7 @@
 /evas_generic_loaders/evas_generic_loaders-1.7.5-32
 /fixesproto/fixesproto-5.0-32
 /flex/flex-2.5.37-32
+/flex/flex-2.5.37-32strap
 /g11n/proto/
 /g11n/src/lib/iconv/common/amd64/
 /g11n/src/lib/iconv/common/*.o
@@ -48,7 +53,7 @@
 /gettext/gettext-0.18.2-32
 /gcc4/compare
 /gcc4/gcc-4.4.4-32
-/gcc4/gcc-4.4.4-i386-build
+/gcc4/gcc-4.4.4-32strap
 /glib/glib-2.30.3-32
 /glproto/glproto-1.4.16-32
 /gnupg/gnupg-1.4.11-32
@@ -64,6 +69,7 @@
 /libfreetype/freetype-2.4.11-32
 /libgif/giflib-5.0.4-32
 /libgmp/gmp-5.1.0-32
+/libgmp/gmp-5.1.0-32strap
 /libiconv/libiconv-1.14-32
 /libidn/libidn-1.11-32
 /libjpeg/jpeg-6b-32
@@ -74,6 +80,7 @@
 /libm/usr/src/libm/wos/libmvec
 /libm/usr/src/libm/wos64/amd64
 /libmpfr/mpfr-3.1.1-32
+/libmpfr/mpfr-3.1.1-32strap
 /libpixman/pixman-0.28.2-32
 /libpng/libpng-1.5.13-32
 /libtiff/tiff-4.0.3-32
@@ -91,7 +98,9 @@
 /libz/zlib-1.2.3-32
 /libz/zlib-1.2.3-64
 /m4/m4-1.4.16-32
+/m4/m4-1.4.16-32strap
 /make/make-3.82-32
+/make/make-3.82-32strap
 /makedepend/makedepend-1.0.4-32
 /mesa/Mesa-8.0.5-32
 /ncurses/ncurses-5.7-32
@@ -108,6 +117,7 @@
 /pciaccess/libpciaccess-0.13-32
 /perl/perl-5.12.3-32
 /pkg-config/pkg-config-lite-0.28-1-32
+/pkg-config/pkg-config-lite-0.28-1-32strap
 /proto
 /pthread-stubs/libpthread-stubs-0.3-32
 /randrproto/randrproto-1.4.0-32
