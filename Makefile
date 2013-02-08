@@ -66,10 +66,40 @@ BASE_SUBDIRS = \
 	wget \
 	zip
 
-DESKTOP_SUBDIRS = \
-	cairo \
+XSERVER_SUBDIRS = \
 	compositeproto \
 	dri2proto \
+	glproto \
+	fixesproto \
+	libdrm \
+	libfreetype \
+	libgif \
+	libjpeg \
+	libpixman \
+	libpng \
+	libtiff \
+	libxau \
+	libxcb \
+	libxcomposite \
+	libxext \
+	libxfixes \
+	libxrandr \
+	libxrender \
+	makedepend \
+	mesa \
+	pciaccess \
+	pthread-stubs \
+	randrproto \
+	renderproto \
+	xcb-proto \
+	xcb-util \
+	xcb-util-image \
+	xcb-util-keysyms \
+	xextproto \
+	xproto
+
+DESKTOP_SUBDIRS = \
+	cairo \
 	e_dbus \
 	ecore \
 	edje \
@@ -84,39 +114,12 @@ DESKTOP_SUBDIRS = \
 	ethumb \
 	evas \
 	evas_generic_loaders \
-	fixesproto \
 	gettext \
-	glproto \
 	libast \
-	libdrm \
 	libffi \
-	libfreetype \
-	libgif \
 	libiconv \
-	libjpeg \
 	liblua \
-	libpixman \
-	libpng \
-	libtiff \
-	libxau \
-	libxcb \
-	libxcomposite \
-	libxext \
-	libxrandr \
-	libxrender \
-	libxslt \
-	makedepend \
-	mesa \
-	pciaccess \
-	pthread-stubs \
-	randrproto \
-	renderproto \
-	xcb-proto \
-	xcb-util \
-	xcb-util-image \
-	xcb-util-keysyms \
-	xextproto \
-	xproto
+	libxslt
 
 TOOLCHAIN_SUBDIRS = \
 	autoconf \
@@ -169,6 +172,24 @@ libmpfr: libgmp
 make: gcc4
 
 #
+# xserver dependencies
+fixesproto: xextproto
+libdrm: pciaccess pthread-stubs
+libpng: libz
+libxau: xproto
+libxcomposite: compositeproto libxfixes
+libxcb: libxslt xcb-proto pthread-stubs libxau
+libxext: xproto xextproto
+libxfixes: xextproto
+libxrandr: randrproto libxrender
+libxrender: renderproto
+makedepend: xproto
+mesa: makedepend dri2proto libxfixes glproto libdrm libexpat libxml libxext
+xcb-util: xproto libxcb xcb-proto
+xcb-util-image: xcb-util xproto libxcb xcb-proto
+xcb-util-keysyms: xcb-util xproto libxcb xcb-proto
+
+#
 # enlightenment dependencies 
 #
 cairo: libfreetype libpng libpixman 
@@ -186,20 +207,6 @@ enlightenment: libxcb xcb-util xcb-util-keysyms emotion
 ethumb: edje emotion
 evas: eet libfreetype libgif libjpeg libpng eina libpixman xcb-util-image
 evas_generic_loaders: evas
-fixesproto: xextproto
-libdrm: pciaccess pthread-stubs
-libpng: libz
-libxcomposite: compositeproto
-libxcb: libxslt xcb-proto pthread-stubs libxau
-libxext: xproto xextproto
-libxfixes: xextproto
-libxrandr: randrproto libxrender
-libxrender: renderproto
-makedepend: xproto
-mesa: makedepend dri2proto libxfixes glproto libdrm libexpat libxml libxext
-xcb-util: xproto libxcb xcb-proto
-xcb-util-image: xcb-util xproto libxcb xcb-proto
-xcb-util-keysyms: xcb-util xproto libxcb xcb-proto
 
 #
 # Toolchain rules: Used to build the and stage the gnu toolchain
@@ -227,6 +234,30 @@ $(TOOLCHAIN_SUBDIRS:%=clean-%): FRC
 toolchain: $(TOOLCHAIN_SUBDIRS)
 install-toolchain: $(TOOLCHAIN_SUBDIRS:%=install-%)
 clean-toolchain: $(TOOLCHAIN_SUBDIRS:%=clean-%)
+
+#
+# Xserver rules: Used to build and stage some xorg components 
+# in the proto area.  It's headers and libraries will be used.
+#
+
+# (subdirname): build and install into proto dir
+$(XSERVER_SUBDIRS): FRC
+	(cd $@ && \
+	    $(MAKE) DESTDIR=$(DESTDIR) install)
+
+# install-(subdirname): install onto host
+$(XSERVER_SUBDIRS:%=install-%): $@
+	(cd $(patsubst install-%,%,$@) && \
+	    $(MAKE) DESTDIR=/ install)
+
+# clean-(subdirname) sanitize build directory
+$(XSERVER_SUBDIRS:%=clean-%): FRC
+	(cd $(patsubst clean-%,%,$@) && \
+	    $(MAKE) DESTDIR=$(DESTDIR) clean)
+
+xserver: $(XSERVER_SUBDIRS)
+install-xserver: $(XSERVER_SUBDIRS:%=install-%)
+clean-xserver: $(XSERVER_SUBDIRS:%=clean-%)
 
 #
 # Enlightenment rules: Used to build and stage enlightenment
@@ -280,9 +311,9 @@ clean-base: $(BASE_SUBDIRS:%=clean-%)
 # Default rules.  Build/Clean/Install everything.
 #
 
-all: $(TOOLCHAIN_SUBDIRS) $(BASE_SUBDIRS) $(DESKTOP_SUBDIRS)
-install: $(TOOLCHAIN_SUBDIRS:%=install-%) $(BASE_SUBDIRS:%=build-%) $(DESKTOP_SUBDIRS:%=build-%)
-clean: $(TOOLCHAIN_SUBDIRS:%=clean-%) $(BASE_SUBDIRS:%=clean-%) $(DESKTOP_SUBDIRS:%=clean-%)
+all: $(TOOLCHAIN_SUBDIRS) $(BASE_SUBDIRS) $(XSERVER_SUBDIRS) $(DESKTOP_SUBDIRS)
+install: $(TOOLCHAIN_SUBDIRS:%=install-%) $(BASE_SUBDIRS:%=install-%) $(XSERVER_SUBDIRS:%=install-%) $(DESKTOP_SUBDIRS:%=install-%)
+clean: $(TOOLCHAIN_SUBDIRS:%=clean-%) $(BASE_SUBDIRS:%=clean-%) $(XSERVER_SUBDIRS:%=clean-%) $(DESKTOP_SUBDIRS:%=clean-%)
 	# Call me paranoid
 	[ "$(DESTDIR)" = "/" ] || rm -rf $(DESTDIR)	
 
