@@ -27,7 +27,7 @@ VER =	binutils-2.22
 include ../Makefile.defs
 include ../class/gnu.mk
 
-AUTOCONF_OPTS = \
+AUTOCONF_OPTS += \
 	--enable-64-bit-bfd \
 	--program-prefix=g
 
