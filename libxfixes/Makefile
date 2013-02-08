@@ -24,23 +24,16 @@
 VER =	libXfixes-5.0
 
 include ../Makefile.defs
-
-# Put this with the rest of the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
-
-# Use x stuff from proto dir
-AUTOCONF_ENV += \
-	PKG_CONFIG_PATH=$(DESTDIR)/usr/X11R6/lib/pkgconfig
+include ../class/x11.mk
 
 # Convince libxfixes that libx11 is installed
 FIXESEXT_CFLAGS = \
-	-I$(DESTDIR)/usr/X11R6/include \
-	-I/usr/X11R6/include
+	-I$(DESTDIR)$(X11_DIR)/include \
+	-I$(X11_DIR)/include
 
 FIXESEXT_LIBS = \
-	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib \
+	-L$(X11_DIR)/lib \
+	-R$(X11_DIR)/lib \
 	-lX11
 
 AUTOCONF_ENV += \

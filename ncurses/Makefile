@@ -25,10 +25,10 @@
 VER =	ncurses-5.7
 
 include ../Makefile.defs
+include ../class/gnu.mk
 
 BUILD64 =	yes
 
-AUTOCONF_PREFIX =	/usr/gnu
 AUTOCONF_OPTS += \
 	-C \
 	--with-shared \
@@ -36,9 +36,6 @@ AUTOCONF_OPTS += \
 
 AUTOCONF_OPTS.64 += \
 	--libdir=/usr/gnu/lib/amd64
-
-LDFLAGS +=	-R/usr/gnu/lib
-LDFLAGS.64 +=	-R/usr/gnu/lib/amd64
 
 PATCHES = \
 	ncurses-01-widec.diff \

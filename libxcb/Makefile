@@ -24,24 +24,17 @@
 VER =	libxcb-1.9
 
 include ../Makefile.defs
+include ../class/x11.mk
 
 PATCHES = Patches/*
 PATCHSTRIP = 0
 
-# Put this with the rest of the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
-
-# Use xproto, pthread-stubs and libxau from proto area
-AUTOCONF_ENV += \
-	PKG_CONFIG_PATH="$(DESTDIR)/usr/X11R6/lib/pkgconfig"
-
 # Help xcbgen find it's crap
 XCBPROTO_XCBPYTHONDIR = \
-	$(DESTDIR)/usr/X11R6/lib/python2.6/site-packages/
+	$(DESTDIR)$(X11_DIR)/lib/python2.6/site-packages/
 
 XCBPROTO_XCBINCLUDEDIR = \
-	$(DESTDIR)/usr/X11R6/share/xcb
+	$(DESTDIR)$(X11_DIR)/share/xcb
 
 OVERRIDES += \
 	XCBPROTO_XCBPYTHONDIR="$(XCBPROTO_XCBPYTHONDIR)" \

@@ -24,10 +24,6 @@
 VER =	gettext-0.18.2
 
 include ../Makefile.defs
-
-# Install into /usr/gnu
-AUTOCONF_OPTS = \
-	--prefix=/usr/gnu
-
+include ../class/gnu.mk
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

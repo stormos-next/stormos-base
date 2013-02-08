@@ -25,15 +25,14 @@
 VER =	binutils-2.22
 
 include ../Makefile.defs
+include ../class/gnu.mk
 
 AUTOCONF_OPTS = \
-	--prefix=/usr/gnu \
 	--enable-64-bit-bfd \
 	--program-prefix=g
 
 AUTOCONF_ENV += \
 	DESTDIR=$(DESTDIR) \
-	MAKE=gmake \
 	CONFIG_SHELL=/bin/bash
 
 include ../Makefile.targ

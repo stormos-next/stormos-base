@@ -24,26 +24,19 @@
 VER =	Mesa-8.0.5
 
 include ../Makefile.defs
+include ../class/x11.mk
 
 TARBALL = MesaLib-8.0.5.tar.gz
 
 PATCHES = Patches/*
 
-# Help mesa find our libs
-AUTOCONF_ENV += \
-	PKG_CONFIG_PATH="$(DESTDIR)/usr/X11R6/lib/pkgconfig"
-
-# Put this with the rest of the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6/
-
 # Convince mesa that libX11 is installed
 X11_CFLAGS = \
-	-I/usr/X11R6/include
+	-I$(X11_DIR)/include
 
 X11_LIBS = \
-	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib \
+	-L$(X11_DIR)/lib \
+	-R$(X11_DIR)/lib \
 	-lX11
 
 AUTOCONF_ENV += \
@@ -53,8 +46,6 @@ AUTOCONF_ENV += \
 	DRIGL_LIBS="$(X11_LIBS)" \
 	XCB_DRI2_CFLAGS="$(X11_CFLAGS)" \
 	XCB_DRI2_LIBS="$(X11_LIBS)"
-
-CFLAGS += $(X11_CFLAGS)
 
 # Enable the bare minium we can get away with
 AUTOCONF_OPTS += \

@@ -24,9 +24,6 @@
 VER =	m4-1.4.16
 
 include ../Makefile.defs
-
-AUTOCONF_OPTS = \
-	--prefix=/usr/gnu
-
+include ../class/gnu.mk
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

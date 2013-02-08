@@ -24,10 +24,6 @@
 VER = 	renderproto-0.11
 
 include ../Makefile.defs
-
-# Put this with the rest of the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
-
+include ../class/x11.mk
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

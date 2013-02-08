@@ -24,18 +24,15 @@
 VER =	libXrender-0.9.7
 
 include ../Makefile.defs
-
-# Put this with the rest of the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
+include ../class/x11.mk
 
 # Convince libXrender that libX11 is installed
 RENDER_CFLAGS = \
-	-I/usr/X11R6/include
+	-I$(X11_DIR)/include
 
 RENDER_LIBS = \
-	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib \
+	-L$(X11_DIR)/lib \
+	-R$(X11_DIR)/lib \
 	-lX11
 
 AUTOCONF_ENV += \

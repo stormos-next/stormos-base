@@ -24,10 +24,6 @@
 VER =	makedepend-1.0.4
 
 include ../Makefile.defs
-
-# Use xproto from protodir
-AUTOCONF_ENV += \
-	PKG_CONFIG_PATH=$(DESTDIR)/usr/X11R6/lib/pkgconfig
-
+include ../class/x11.mk
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

@@ -24,27 +24,20 @@
 VER = 	libXcomposite-0.4.4
 
 include ../Makefile.defs
-
-# Put this with the rest of the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
+include ../class/x11.mk
 
 # Convince libXcomposite that xlibs are installed
 XCOMPOSITE_CFLAGS = \
-	-I$(DESTDIR)/usr/X11R6/include \
-	-I/usr/X11R6/include
+	-I$(DESTDIR)$(X11_DIR)/include \
+	-I$(X11_DIR)/include 
 
 XCOMPOSITE_LIBS = \
-	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib
+	-L$(X11_DIR)/lib \
+	-R$(X11_DIR)/lib
 
 AUTOCONF_ENV += \
 	XCOMPOSITE_CFLAGS="$(XCOMPOSITE_CFLAGS)" \
 	XCOMPOSITE_LIBS="$(XCOMPOSITE_LIBS)"
-
-# Use xfixes from Joergs X distribution
-AUTOCONF_ENV += \
-	PKG_CONFIG_PATH=/usr/X11R6/lib/pkgconfig
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

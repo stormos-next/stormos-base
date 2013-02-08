@@ -24,10 +24,9 @@
 VER =	freetype-2.4.11
 
 include ../Makefile.defs
+include ../class/x11.mk
 
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
-
+# Help freetype find gnu make
 AUTOCONF_ENV += \
 	GNUMAKE=$(MAKE)
 

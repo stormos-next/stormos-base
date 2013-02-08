@@ -21,9 +21,27 @@
 # Copyright (c) 2013 Andrew Stormont. All rights reserved.
 #
 
-VER =	glproto-1.4.16
+# We keep our GNU crap in /usr/gnu
+GNU_DIR = /usr/gnu
 
-include ../Makefile.defs
-include ../class/x11.mk
-include ../Makefile.targ
-include ../Makefile.targ.autoconf
+PATH := $(PATH):$(DESTDIR)$(GNU_DIR)/bin:$(GNU_DIR)/bin
+
+AUTOCONF_ENV += \
+	PKG_CONFIG_PATH="$(DESTDIR)$(GNU_DIR)/lib/pkgconfig"
+
+AUTOCONF_OPTS = \
+	--prefix=$(GNU_DIR)
+
+CFLAGS += \
+	-I$(DESTDIR)$(GNU_DIR)/include \
+	-I$(GNU_DIR)/include 
+
+LDFLAGS += \
+	-L$(DESTDIR)$(GNU_DIR)/lib \
+	-L$(GNU_DIR)/lib \
+	-R$(GNU_DIR)/lib
+
+LDFLAGS.64 += \
+	-L$(DESDIR)$(GNU_DIR)/lib/amd64 \
+	-L$(GNU_DIR)/lib/amd64 \
+	-R$(GNU_DIR)/lib/amd64

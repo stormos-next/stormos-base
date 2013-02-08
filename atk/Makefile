@@ -24,15 +24,12 @@
 VER =	atk-2.0.0
 
 include ../Makefile.defs
+include ../class/x11.mk
 
 PATCHES = Patches/*
 
 # help glib-test find glib in proto dir 
 AUTOCONF_ENV += LD_LIBRARY_PATH=$(DESTDIR)/usr/lib
-
-# put this with the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

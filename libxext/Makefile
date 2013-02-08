@@ -24,25 +24,18 @@
 VER =	libXext-1.3.1
 
 include ../Makefile.defs
+include ../class/x11.mk
 
 PATCHES = Patches/*
 
-# Put this with the rest of the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
-
-# Help libxext find libs in proto dir
-AUTOCONF_ENV += \
-	PKG_CONFIG_PATH=$(DESTDIR)/usr/X11R6/lib/pkgconfig
-
 # Convince libxext that libX11 is installed
 XEXT_CFLAGS = \
-	-I$(DESTDIR)/usr/X11R6/include \
-	-I/usr/X11R6/include
+	-I$(DESTDIR)$(X11_DIR)/include \
+	-I$(X11_DIR)/include 
 
 XEXT_LIBS = \
-	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib \
+	-L$(X11_DIR)/lib \
+	-R$(X11_DIR)/lib \
 	-lX11
 
 AUTOCONF_ENV += \

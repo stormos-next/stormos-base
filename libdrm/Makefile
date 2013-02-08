@@ -27,13 +27,9 @@ include ../Makefile.defs
 
 PATCHES = Patches/*
 
-# Put this with the rest of the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
+# Disable -zfatal-warnings for now
+LDFLAGS = $(T32_LDFLAGS)
 
-# Help libdrm find pthread-stubs
-AUTOCONF_ENV += \
-	PKG_CONFIG_PATH=$(DESTDIR)/usr/X11R6/lib/pkgconfig
-
+include ../class/x11.mk
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

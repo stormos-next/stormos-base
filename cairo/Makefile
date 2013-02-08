@@ -28,13 +28,6 @@ include ../Makefile.defs
 # Disable -zfatal-warnings for now
 LDFLAGS = $(T32_LDFLAGS)
 
-# Help cairo find pixman and freetype in protodir
-AUTOCONF_ENV += \
-	PKG_CONFIG_PATH="$(DESTDIR)/usr/X11R6/lib/pkgconfig"
-
-# Put this with the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
-
+include ../class/x11.mk
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

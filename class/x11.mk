@@ -21,9 +21,22 @@
 # Copyright (c) 2013 Andrew Stormont. All rights reserved.
 #
 
-VER =	glproto-1.4.16
+# We store X and related libraries in /usr/X11R6
+X11_DIR = /usr/X11R6
 
-include ../Makefile.defs
-include ../class/x11.mk
-include ../Makefile.targ
-include ../Makefile.targ.autoconf
+PATH := $(PATH):$(DESTDIR)$(X11_DIR)/bin:$(X11_DIR)/bin
+
+AUTOCONF_ENV += \
+	PKG_CONFIG_PATH="$(DESTDIR)$(X11_DIR)/lib/pkgconfig"
+
+AUTOCONF_OPTS = \
+	--prefix=$(X11_DIR)
+
+CFLAGS += \
+	-I$(DESTDIR)$(X11_DIR)/include \
+	-I$(X11_DIR)/include 
+
+LDFLAGS += \
+	-L$(DESTDIR)$(X11_DIR)/lib \
+	-L$(X11_DIR)/lib \
+	-R$(X11_DIR)/lib

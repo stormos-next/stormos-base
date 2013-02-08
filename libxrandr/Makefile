@@ -24,18 +24,15 @@
 VER =	libXrandr-1.4.0
 
 include ../Makefile.defs
-
-# Put this with the rest of the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
+include ../class/x11.mk
 
 # Convince libXrandr that Xlibs are installed
 RANDR_CFLAGS = \
-	-I/usr/X11R6/include \
+	-I$(X11_DIR)/include 
 
 RANDR_LIBS = \
-	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib \
+	-L$(X11_DIR)/lib \
+	-R$(X11_DIR)/lib \
 	-lXrender
 
 AUTOCONF_ENV += \

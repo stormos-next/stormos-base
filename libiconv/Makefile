@@ -24,11 +24,9 @@
 VER =	libiconv-1.14
 
 include ../Makefile.defs
+include ../class/gnu.mk
 
 PATCHES = Patches/*
-
-AUTOCONF_OPTS = \
-	--prefix=/usr/gnu
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

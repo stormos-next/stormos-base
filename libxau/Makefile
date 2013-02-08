@@ -24,14 +24,6 @@
 VER =	libXau-1.0.7
 
 include ../Makefile.defs
-
-# Put this with the rest of the X stuff
-AUTOCONF_OPTS = \
-	--prefix=/usr/X11R6
-
-# Use xproto from protodir
-AUTOCONF_ENV += \
-	PKG_CONFIG_PATH=$(DESTDIR)/usr/X11R6/lib/pkgconfig
-
+include ../class/x11.mk
 include ../Makefile.targ
 include ../Makefile.targ.autoconf
