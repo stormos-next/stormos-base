@@ -85,9 +85,9 @@ AUTOCONF_ENV += \
 	E_CFLAGS="$(DBUS_CFLAGS) $(EDBUS_CFLAGS) $(ECORE_CFLAGS) $(XCB_CFLAGS)" \
 	E_LIBS="$(DBUS_LIBS) $(EDBUS_LIBS) $(ECORE_LIBS) $(XCB_LDFLAGS)"	
 
-# Use fontconfig library from Joergs X distribution
+# Use fontconfig library from protodir
 AUTOCONF_ENV += \
-	PKG_CONFIG_PATH="/usr/X11R6/lib/pkgconfig"
+	PKG_CONFIG_PATH="$(DESTDIR)/usr/X11R6/lib/pkgconfig"
 
 # And X headers too
 CFLAGS += \

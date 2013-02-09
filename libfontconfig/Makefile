@@ -21,23 +21,9 @@
 # Copyright (c) 2013 Andrew Stormont. All rights reserved.
 #
 
-VER =	elementary-1.7.5
+VER =	fontconfig-2.10.91
 
 include ../Makefile.defs
-
-# Use fontconfig library from protodir
-AUTOCONF_ENV += \
-	PKG_CONFIG_PATH="$(DESTDIR)/usr/X11R6/lib/pkgconfig"
-
-# Configure does not honor PATH, so override.
-AUTOCONF_OPTS += \
-	--with-edje-cc=$(DESTDIR)/usr/bin/edje_cc \
-	--with-eet-eet=$(DESTDIR)/usr/bin/eet
-
-# HACK: Help eet and embryo find their libraries until
-# a better solution (probably RUNPATH) is implemented.
-OVERRIDES += \
-	LD_LIBRARY_PATH=$(DESTDIR)/usr/lib
-
+include ../class/x11.mk
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

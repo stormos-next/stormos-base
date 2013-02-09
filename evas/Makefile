@@ -28,18 +28,10 @@ include ../Makefile.defs
 PATCHES = Patches/*
 PATCHSTRIP = 0
 
-# Use fontconfig from Jeorg's X distribution
-FONTCONFIG_CFLAGS = \
-	-I/usr/X11R6/include \
-	-I/usr/X11R6/include/fontconfig
-
-FONTCONFIG_LIBS = \
-	-L/usr/X11R6/lib \
-	-R/usr/X11R6/lib \
-	-lfontconfig
-
+# Convince evas that xlibs are installed
 XCB_CFLAGS = \
-	-I$(DESTDIR)/usr/X11R6/include
+	-I$(DESTDIR)/usr/X11R6/include \
+	-I/usr/X11R6/include 
 
 XCB_LDFLAGS = \
 	-L$(DESTDIR)/usr/X11R6/lib \
@@ -61,13 +53,11 @@ LDFLAGS += \
 	-R/usr/X11R6/lib
 
 AUTOCONF_ENV += \
-	FONTCONFIG_CFLAGS="$(FONTCONFIG_CFLAGS)" \
-	FONTCONFIG_LIBS="$(FONTCONFIG_LIBS)" \
 	XCB_CFLAGS="$(XCB_CFLAGS)" \
 	XCB_LIBS="$(XCB_LDFLAGS)" \
 	LIBS="$(LIBS)"
 
-# Use pixman and freetype from proto area
+# Use pixman, freetype and fontconfig from proto area
 AUTOCONF_ENV += \
 	PKG_CONFIG_PATH="$(DESTDIR)/usr/X11R6/lib/pkgconfig"
 

@@ -72,6 +72,7 @@ XSERVER_SUBDIRS = \
 	glproto \
 	fixesproto \
 	libdrm \
+	libfontconfig \
 	libfreetype \
 	libgif \
 	libjpeg \
@@ -192,7 +193,7 @@ xcb-util-keysyms: xcb-util xproto libxcb xcb-proto
 #
 # enlightenment dependencies 
 #
-cairo: libfreetype libpng libpixman 
+cairo: libfontconfig libfreetype libpng libpixman 
 e_dbus: ecore eina
 ecore: curl evas_generic_loaders libxrandr libxrender
 edje: ecore eet eina embryo liblua
@@ -200,12 +201,12 @@ eet: libz libjpeg eina
 efreet: edje
 eina: libiconv
 eio: ecore
-elementary: eet edje embryo
+elementary: eet edje embryo libfontconfig
 embryo: eio
-emotion: edje
-enlightenment: libxcb xcb-util xcb-util-keysyms emotion
-ethumb: edje emotion
-evas: eet libfreetype libgif libjpeg libpng eina libpixman xcb-util-image
+emotion: edje libfontconfig
+enlightenment: libfontconfig libxcb xcb-util xcb-util-keysyms emotion
+ethumb: edje emotion libfontconfig
+evas: eet libfontconfig libfreetype libgif libjpeg libpng eina libpixman xcb-util-image
 evas_generic_loaders: evas
 
 #

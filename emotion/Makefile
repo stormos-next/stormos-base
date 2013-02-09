@@ -25,9 +25,9 @@ VER =	emotion-1.7.5
 
 include ../Makefile.defs
 
-# Use fontconfig library from Joergs X distribution
+# Use fontconfig library from protodir
 AUTOCONF_ENV += \
-	PKG_CONFIG_PATH=/usr/X11R6/lib/pkgconfig
+	PKG_CONFIG_PATH=$(DESTDIR)/usr/X11R6/lib/pkgconfig
 
 # Configure does not honor PATH, so override.
 AUTOCONF_OPTS += \
