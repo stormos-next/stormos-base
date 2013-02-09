@@ -27,7 +27,9 @@ include ../Makefile.defs
 
 PATCHES = Patches/*
 
-all: unpack
+UNPACK_SENTINEL = Makefile
+
+all: $(VER.32)/$(UNPACK_SENTINEL)
 	(cd $(VER.32); \
 	    env - PATH=$(PATH) \
 	    $(MAKE) CC=$(GCC) $(PARALLEL) $(OVERRIDES) DESTDIR=$(DESTDIR))
@@ -36,14 +38,5 @@ install: all
 	(cd $(VER.32); \
             env - PATH=$(PATH) \
             $(MAKE) $(install_PARALLEL) $(OVERRIDES) DESTDIR=$(DESTDIR) install)
-
-unpack: $(TARBALL)
-	-rm -rf $(VER.32)
-	mkdir -p .unpack32
-	gtar xz -C .unpack32 --no-same-owner -f $(TARBALL)
-	$(APPLY_PATCHES.32)
-	mv -f .unpack32/$(VER) ./$(VER.32)
-	-rmdir .unpack32
-	touch $(VER.32)/$(UNPACK_SENTINEL)
 
 include ../Makefile.targ
