@@ -32,6 +32,17 @@ LDFLAGS = $(T32_LDFLAGS)
 AUTOCONF_OPTS += \
 	--disable-dtrace
 
+# glib is braindead without gnu icon
+AUTOCONF_OPTS += \
+	--with-libiconv=gnu
+
+CFLAGS += \
+	-I$(DESTDIR)/usr/gnu/include
+
+LDFLAGS += \
+	-L$(DESTDIR)/usr/gnu/lib \
+	-R$(DESTDIR)/usr/gnu/lib
+
 # use GNU gettext
 AUTOCONF_ENV += \
 	MSGFMT=$(DESTDIR)/usr/gnu/bin/msgfmt

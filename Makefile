@@ -101,6 +101,7 @@ XSERVER_SUBDIRS = \
 	xproto
 
 DESKTOP_SUBDIRS = \
+	atk \
 	cairo \
 	e_dbus \
 	ecore \
@@ -118,11 +119,14 @@ DESKTOP_SUBDIRS = \
 	evas \
 	evas_generic_loaders \
 	gettext \
+	glib \
+	gtk \
 	libast \
 	libffi \
 	libiconv \
 	liblua \
-	libxslt
+	libxslt \
+	pango
 
 TOOLCHAIN_SUBDIRS = \
 	autoconf \
@@ -211,6 +215,8 @@ eterm: imlib2
 ethumb: edje emotion libfontconfig
 evas: eet libfontconfig libfreetype libgif libjpeg libpng eina libpixman xcb-util-image
 evas_generic_loaders: evas
+gtk: libiconv atk cairo pango
+pango: glib
 
 #
 # Toolchain rules: Used to build the and stage the gnu toolchain

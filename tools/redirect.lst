@@ -11,3 +11,9 @@
 /usr/bin/autoconf$
 /usr/bin/automake$
 /usr/bin/autoreconf$
+
+#libraries (needed by gtk)
+/usr/X11R6/lib/libcairo.so
+/usr/X11R6/lib/libfontconfig.so
+/usr/X11R6/lib/libfreetype.so
+/usr/X11R6/lib/libXrender.so

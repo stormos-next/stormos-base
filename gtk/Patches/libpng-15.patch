@@ -1,0 +1,92 @@
+--- gtk+-2.20.1-32/gdk-pixbuf/io-png.c.bak	Sat Feb  9 12:37:56 2013
++++ gtk+-2.20.1-32/gdk-pixbuf/io-png.c	Sat Feb  9 12:47:53 2013
+@@ -184,7 +184,7 @@
+                              error_msg);
+         }
+ 
+-        longjmp (png_save_ptr->jmpbuf, 1);
++        png_longjmp (png_save_ptr, 1);
+ }
+ 
+ static void
+@@ -288,7 +288,7 @@
+ 		return NULL;
+ 	}
+ 
+-	if (setjmp (png_ptr->jmpbuf)) {
++	if (setjmp (png_jmpbuf(png_ptr))) {
+ 	    	g_free (rows);
+ 
+ 		if (pixbuf)
+@@ -342,7 +342,7 @@
+         /* Extract embedded ICC profile */
+         retval = png_get_iCCP (png_ptr, info_ptr,
+                                (png_charpp) &icc_profile_title, &compression_type,
+-                               (png_charpp) &icc_profile, (png_uint_32*) &icc_profile_size);
++                               (png_bytepp) &icc_profile, (png_uint_32*) &icc_profile_size);
+         if (retval != 0) {
+                 icc_profile_base64 = g_base64_encode ((const guchar *) icc_profile, icc_profile_size);
+                 gdk_pixbuf_set_option (pixbuf, "icc-profile", icc_profile_base64);
+@@ -460,7 +460,7 @@
+                 return NULL;
+         }
+         
+-	if (setjmp (lc->png_read_ptr->jmpbuf)) {
++	if (setjmp (png_jmpbuf(lc->png_read_ptr))) {
+ 		if (lc->png_info_ptr)
+ 			png_destroy_read_struct(&lc->png_read_ptr, NULL, NULL);
+                 g_free(lc);
+@@ -532,7 +532,7 @@
+         lc->error = error;
+         
+         /* Invokes our callbacks as needed */
+-	if (setjmp (lc->png_read_ptr->jmpbuf)) {
++	if (setjmp (png_jmpbuf(lc->png_read_ptr))) {
+                 lc->error = NULL;
+ 		return FALSE;
+ 	} else {
+@@ -655,7 +655,7 @@
+                                      GDK_PIXBUF_ERROR,
+                                      GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
+                                      _("Insufficient memory to store a %ld by %ld image; try exiting some applications to reduce memory usage"),
+-                                     width, height);
++                                     (long int) width, (long int) height);
+                 }
+                 return;
+         }
+@@ -679,7 +679,7 @@
+         /* Extract embedded ICC profile */
+         retval = png_get_iCCP (png_read_ptr, png_info_ptr,
+                                (png_charpp) &icc_profile_title, &compression_type,
+-                               (png_charpp) &icc_profile, (png_uint_32*) &icc_profile_size);
++                               (png_bytepp) &icc_profile, (png_uint_32*) &icc_profile_size);
+         if (retval != 0) {
+                 icc_profile_base64 = g_base64_encode ((const guchar *) icc_profile, icc_profile_size);
+                 gdk_pixbuf_set_option (lc->pixbuf, "icc-profile", icc_profile_base64);
+@@ -770,7 +770,7 @@
+                              error_msg);
+         }
+ 
+-        longjmp (png_read_ptr->jmpbuf, 1);
++        png_longjmp (png_read_ptr, 1);
+ }
+ 
+ static void
+@@ -979,7 +979,7 @@
+ 	       success = FALSE;
+ 	       goto cleanup;
+        }
+-       if (setjmp (png_ptr->jmpbuf)) {
++       if (setjmp (png_jmpbuf(png_ptr))) {
+ 	       success = FALSE;
+ 	       goto cleanup;
+        }
+@@ -1007,7 +1007,7 @@
+         if (icc_profile != NULL) {
+                 png_set_iCCP (png_ptr, info_ptr,
+                               "ICC profile", PNG_COMPRESSION_TYPE_BASE,
+-                              (gchar*) icc_profile, icc_profile_size);
++                              (png_bytep) icc_profile, icc_profile_size);
+         }
+ #endif
+ 
