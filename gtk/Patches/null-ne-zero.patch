@@ -1,0 +1,11 @@
+--- gtk+-2.20.1-32/modules/printbackends/papi/gtkprintbackendpapi.c.bak	Sat Feb  9 17:00:36 2013
++++ gtk+-2.20.1-32/modules/printbackends/papi/gtkprintbackendpapi.c	Sat Feb  9 17:02:44 2013
+@@ -352,7 +352,7 @@
+   const gchar *title;
+   char *prtnm = NULL;
+   GtkPrintDuplex val;
+-  papi_status_t pstatus = NULL;
++  papi_status_t pstatus = 0;
+   papi_attribute_t **attrs = NULL;
+   papi_job_ticket_t *ticket = NULL;
+   
