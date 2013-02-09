@@ -24,10 +24,16 @@
 VER =	cairo-1.12.12
 
 include ../Makefile.defs
+include ../class/x11.mk
 
 # Disable -zfatal-warnings for now
 LDFLAGS = $(T32_LDFLAGS)
 
-include ../class/x11.mk
+AUTOCONF_OPTS += \
+	--x-includes=$(DESTDIR)$(X11_DIR)/include \
+	--x-libraries=$(DESTDIR)$(X11_DIR)/lib \
+	--enable-fc=yes \
+	--enable-ft=yes
+
 include ../Makefile.targ
 include ../Makefile.targ.autoconf
