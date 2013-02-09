@@ -30,5 +30,12 @@ include ../class/x11.mk
 AUTOCONF_ENV += \
 	GNUMAKE=$(MAKE)
 
+# Real configure script is in a subdir
+AUTOCONF_DIR = builds/unix
+
+# Skip (re)configuration step
+OVERRIDES += \
+	CONFIG_MK=builds/unix/unix.mk
+
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

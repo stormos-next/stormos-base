@@ -27,21 +27,15 @@ include ../Makefile.defs
 
 PATCHES = Patches/*
 
-UNPACK_SENTINEL = unix/configure
+# Configure scripts lives in subdir
+AUTOCONF_DIR = unix
 
-configure: $(VER.32)/unix/configure
-	(cd $(VER.32)/unix; \
-	    $(BUILD_ENV) PATH=$(PATH) MAKE=$(MAKE) \
-	    $(AUTOCONF_ENV) ./configure $(GCC))
+# Configure only take a single argument: the compiler
+AUTOCONF_OPTS = $(GCC)
 
-all: configure
-	(cd $(VER.32); \
-	    $(BUILD_ENV) PATH=$(PATH) MAKE=$(MAKE) \
-	    $(MAKE) -f unix/Makefile $(PARALLEL) $(OVERRIDES) generic_gcc)
-
-install:
-	(cd $(VER.32); \
-	    $(BUILD_ENV) PATH=$(PATH) MAKE=$(MAKE) \
-	    $(MAKE) -f unix/Makefile $(PARALLEL) $(OVERRIDES) install)
+# Must call Makefile from top directory
+all_autoconf: OVERRIDES += -f unix/Makefile generic_gcc
+install_autoconf: OVERRIDES += -f unix/Makefile
 
 include ../Makefile.targ
+include ../Makefile.targ.autoconf

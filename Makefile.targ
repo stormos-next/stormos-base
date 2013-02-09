@@ -64,13 +64,13 @@ uninstall_autoconf_64:
 	    env - PATH=$(PATH) MAKE=$(MAKE) \
 	    $(MAKE) $(uninstall_PARALELL) $(OVERRIDES.64) DESTDIR=$(DESTDIR) uninstall)
 
-$(AUTOCONF_OUT.32): $(VER.32)/configure
-	(cd $(VER.32); \
+$(AUTOCONF_OUT.32): $(VER.32)/$(AUTOCONF_DIR)/configure
+	(cd $(VER.32)/$(AUTOCONF_DIR); \
 	    $(BUILD_ENV) PATH=$(PATH) MAKE=$(MAKE) \
 	    $(AUTOCONF_ENV) ./configure $(AUTOCONF_OPTS.32))
 
-$(AUTOCONF_OUT.64): $(VER.64)/configure
-	(cd $(VER.64); \
+$(AUTOCONF_OUT.64): $(VER.64)/$(AUTOCONF_DIR)/configure
+	(cd $(VER.64)/$(AUTOCONF_DIR); \
 	    $(BUILD_ENV) PATH=$(PATH) MAKE=$(MAKE) \
 	    $(AUTOCONF_ENV.64) ./configure $(AUTOCONF_OPTS.64))
 
