@@ -25,9 +25,11 @@ VER =	edje-1.7.5
 
 include ../Makefile.defs
 
-# Use libraries from Joergs X distribution
+PATCHES = Patches/*
+
+# Use libraries from protodir
 AUTOCONF_OPTS += \
-	PKG_CONFIG_PATH=/usr/X11R6/lib/pkgconfig
+	PKG_CONFIG_PATH=$(DESTDIR)/usr/X11R6/lib/pkgconfig
 
 include ../Makefile.targ
 include ../Makefile.targ.autoconf

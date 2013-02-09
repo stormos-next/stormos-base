@@ -1,0 +1,10 @@
+--- edje-1.7.5-32/src/bin/epp/cpplib.c.bak	Sat Feb  9 04:25:48 2013
++++ edje-1.7.5-32/src/bin/epp/cpplib.c	Sat Feb  9 04:23:50 2013
+@@ -7453,6 +7453,7 @@
+ {
+    FILE *f;
+ 
++   if (!options.watchfile) return ;
+    f = fopen(options.watchfile, "a");
+    if (!f) return ;
+    fputs(filename, f);
