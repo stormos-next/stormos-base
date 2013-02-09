@@ -71,6 +71,7 @@ XSERVER_SUBDIRS = \
 	dri2proto \
 	glproto \
 	fixesproto \
+	imlib2 \
 	libdrm \
 	libfontconfig \
 	libfreetype \
@@ -112,6 +113,7 @@ DESKTOP_SUBDIRS = \
 	embryo \
 	emotion \
 	enlightenment \
+	eterm \
 	ethumb \
 	evas \
 	evas_generic_loaders \
@@ -205,6 +207,7 @@ elementary: eet edje embryo libfontconfig
 embryo: eio
 emotion: edje libfontconfig
 enlightenment: libfontconfig libxcb xcb-util xcb-util-keysyms emotion
+eterm: imlib2
 ethumb: edje emotion libfontconfig
 evas: eet libfontconfig libfreetype libgif libjpeg libpng eina libpixman xcb-util-image
 evas_generic_loaders: evas

@@ -1,0 +1,9 @@
+--- imlib2-1.4.5-32/src/bin/imlib2_view.c.bak	Sat Feb  9 09:52:50 2013
++++ imlib2-1.4.5-32/src/bin/imlib2_view.c	Sat Feb  9 09:54:03 2013
+@@ -1,5 +1,6 @@
+ #include "config.h"
+ #include <X11/Xlib.h>
++#include <X11/keysym.h>
+ #include <X11/extensions/XShm.h>
+ #include <X11/Xutil.h>
+ #include <X11/extensions/shape.h>

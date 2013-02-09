@@ -1,0 +1,19 @@
+--- imlib2-1.4.5-32/src/modules/loaders/loader_gif.c.bak	Sat Feb  9 09:55:26 2013
++++ imlib2-1.4.5-32/src/modules/loaders/loader_gif.c	Sat Feb  9 09:55:54 2013
+@@ -20,6 +20,7 @@
+    int                 intjump[] = { 8, 8, 4, 2 };
+    int                 transp;
+    int                 fd;
++   int                 gif_error;
+ 
+    done = 0;
+    rows = NULL;
+@@ -36,7 +37,7 @@
+ #endif
+    if (fd < 0)
+       return 0;
+-   gif = DGifOpenFileHandle(fd);
++   gif = DGifOpenFileHandle(fd, &gif_error);
+    if (!gif)
+      {
+         close(fd);
